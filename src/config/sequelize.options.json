@@ -1,0 +1,4 @@
+{
+    "config": "core/config/sequelize.js",
+    "migrations-path": "migrations/"
+}

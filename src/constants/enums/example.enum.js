@@ -1,0 +1,5 @@
+export default {
+  AVATAR: 'AVATAR',
+  ID_CARD: 'ID_CARD',
+  DRIVING_LICENCE: 'DRIVING_LICENCE',
+};
