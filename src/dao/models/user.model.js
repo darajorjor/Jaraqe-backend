@@ -1,10 +1,8 @@
-import { Sequelize, sequelize } from 'connections/postgres';
-import userAdditionalData from 'src/constants/defaults/userAdditionalData.default';
-import userPreferences from 'src/constants/defaults/userPreferences.default';
-import userSettings from 'src/constants/defaults/userSettings.default';
-import genderTypes from 'src/constants/enums/genderTypes.enum';
-import status from 'src/constants/enums/status.enum';
-import dateHelper from 'src/utils/helpers/date.helper';
+import { Sequelize, sequelize } from 'connections/postgres'
+import userAdditionalData from 'src/constants/defaults/userAdditionalData.default'
+import genderTypes from 'src/constants/enums/genderTypes.enum'
+import status from 'src/constants/enums/status.enum'
+import dateHelper from 'src/utils/helpers/date.helper'
 
 const User = sequelize.define('user',
   {
@@ -19,14 +17,22 @@ const User = sequelize.define('user',
     last_name: {
       type: Sequelize.STRING,
     },
+    full_name: {
+      type: Sequelize.VIRTUAL,
+      get: function get() {
+        const additionalData = this.get('additional_data');
+        if (additionalData && additionalData.instagram) {
+          return additionalData.instagram.fullName || additionalData.instagram.username
+        }
+        return undefined;
+      },
+    },
     phone_number: {
       type: Sequelize.STRING,
-      allowNull: false,
     },
     gender: {
       type: Sequelize.ENUM(genderTypes.MALE, genderTypes.FEMALE, genderTypes.UNDEFINED),
       defaultValue: genderTypes.UNDEFINED,
-      allowNull: false,
     },
     avatars: {
       type: Sequelize.ARRAY(Sequelize.STRING),
@@ -34,15 +40,7 @@ const User = sequelize.define('user',
     },
     settings: {
       type: Sequelize.JSONB,
-      defaultValue: userSettings,
-    },
-    preferences: {
-      type: Sequelize.JSONB,
-      defaultValue: userPreferences,
-    },
-    verified: {
-      type: Sequelize.BOOLEAN,
-      defaultValue: false,
+      defaultValue: {},
     },
     session: {
       type: Sequelize.STRING,
@@ -53,7 +51,7 @@ const User = sequelize.define('user',
       type: Sequelize.ENUM(
         status.USER.ACTIVE,
         status.USER.INACTIVE,
-        status.USER.SUSPEND,
+        status.USER.SUSPENDED,
         status.USER.PENDING,
       ),
       defaultValue: status.USER.PENDING,
@@ -69,52 +67,37 @@ const User = sequelize.define('user',
     wallet: {
       type: Sequelize.VIRTUAL,
       set: function set(balance) { // DO NOT USE ARROW FUNCTIONS HERE!!!
-        this.setDataValue('wallet', balance);
+        this.setDataValue('wallet', balance)
       },
     },
     is_registered: {
       type: Sequelize.VIRTUAL,
       get: function get() { // DO NOT USE ARROW FUNCTIONS HERE!!!
-        return (this.get('status') !== status.USER.PENDING);
+        return !!this.get('first_name')
       },
     },
     avatar: {
       type: Sequelize.VIRTUAL,
       get: function get() {
         if (this.get('has_avatar') === true) {
-          const avatars = this.get('avatars');
-          return `avatars/${avatars[avatars.length - 1]}`;
+          const avatars = this.get('avatars')
+          return `avatars/${avatars[avatars.length - 1]}`
         }
-        return `avatars/default-${this.get('gender') === genderTypes.MALE ? 'male' : 'female'}.jpg`;
+        return `avatars/default-${this.get('gender') === genderTypes.MALE ? 'male' : 'female'}.jpg`
       },
     },
     has_avatar: {
       type: Sequelize.VIRTUAL,
       get: function get() {
-        const avatars = this.get('avatars');
-        return avatars !== undefined ? avatars.length !== 0 : false;
+        const avatars = this.get('avatars')
+        return avatars !== undefined ? avatars.length !== 0 : false
       },
     },
     age: {
       type: Sequelize.VIRTUAL,
       get: function get() {
-        const age = dateHelper.getAge(this.get('additional_data').birth_date);
-        return age;
-      },
-    },
-    full_name: {
-      type: Sequelize.VIRTUAL,
-      get: function get() {
-        const gender = this.get('gender');
-        const firstName = this.get('first_name');
-        const lastName = this.get('last_name');
-        let fullName = '';
-        if ((firstName || lastName) && gender && gender !== genderTypes.UNDEFINED) {
-          fullName = fullName.concat((gender === genderTypes.MALE ? 'آقای' : 'خانم'), ' ');
-        }
-        fullName = fullName.concat(firstName ? `${firstName} ` : '');
-        fullName = fullName.concat(lastName ? `${lastName}` : '');
-        return fullName;
+        const age = dateHelper.getAge(this.get('additional_data').birth_date)
+        return age
       },
     },
   },
@@ -122,6 +105,6 @@ const User = sequelize.define('user',
     timestamps: true,
     createdAt: 'created_at',
     updatedAt: 'updated_at',
-  });
+  })
 
-export default User;
+export default User

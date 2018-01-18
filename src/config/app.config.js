@@ -1,6 +1,6 @@
-import dotenv from 'dotenv';
+import dotenv from 'dotenv'
 
-dotenv.config();
+dotenv.config()
 
 export default {
   port: process.env.APP_PORT,
@@ -11,4 +11,6 @@ export default {
     password: process.env.PG_PASSWORD,
     database: process.env.PG_DATABASE,
   },
-};
+  instagramClientId: process.env.INSTAGRAM_CLIENT_ID,
+  instagramClientSecret: process.env.INSTAGRAM_CLIENT_SECRET,
+}
