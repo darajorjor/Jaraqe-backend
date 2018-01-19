@@ -26,4 +26,6 @@ export default {
   AGE_UNDER_18: 'age_under_18',
   NO_SERVICE_SELECTED: 'no_service_selected',
   USER_NOT_FOUND: 'user_not_found',
+  GAME_CREATED_SUCCESSFULLY: 'game_created_successfully',
+  NO_ONE_MATCHED: 'no_one_matched',
 }

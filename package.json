@@ -61,6 +61,7 @@
     "requestify": "0.2.5",
     "sequelize": "4.13.8",
     "sequelize-cli": "3.0.0",
+    "sqlite3": "^3.1.13",
     "transformobject": "0.1.1",
     "uuid": "3.1.0"
   },

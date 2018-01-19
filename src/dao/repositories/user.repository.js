@@ -1,14 +1,17 @@
 import { User } from '../models'
-import messages from 'src/constants/defaults/messages.default'
 import status from 'src/constants/enums/status.enum'
 import uuid from 'uuid/v4'
 
 export default {
+  findOne(data) {
+    return User.findOne(data)
+  },
+
   async findBySession(session) {
     return User.findOne({
       session,
       status: status.USER.ACTIVE,
-    });
+    }).exec();
   },
 
   async findByInstagramId(id) {

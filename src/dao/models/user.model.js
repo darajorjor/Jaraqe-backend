@@ -4,11 +4,7 @@ import status from 'src/constants/enums/status.enum'
 import genderTypes from 'src/constants/enums/genderTypes.enum'
 
 const UserSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    unique: true,
-    allowNull: false,
-  },
+  username: String,
   firstName: String,
   lastName: String,
   fullName: String,
@@ -38,8 +34,6 @@ const UserSchema = new mongoose.Schema({
     instagram: {},
   }
 }, { timestamps: true });
-
-UserSchema.method = {};
 
 const User = mongoose.model('User', UserSchema);
 
