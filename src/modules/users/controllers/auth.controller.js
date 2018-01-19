@@ -4,6 +4,8 @@ import requestify from 'requestify'
 import UserService from '../services/user.service'
 import messages from 'src/constants/defaults/messages.default'
 import userTransform from '../transformers/user.transformer'
+import Handlebars from 'handlebars'
+import { returnToApp } from 'src/utils/templates'
 
 module.exports = {
   async loginInstagramController(req, res, next) {
@@ -43,10 +45,14 @@ module.exports = {
         const { user, access_token: accessToken } = data.body
 
         const savedUser = await UserService.registerInstagramUser(user, accessToken)
-        return res.build.success({
-          user: userTransform(savedUser),
-          session: savedUser.session,
-        }, messages.USER_REGISTERED)
+
+        return res.send(Handlebars.compile(returnToApp.toString())({
+          data: JSON.stringify({
+              user: userTransform(savedUser),
+              session: savedUser.session,
+            }
+          )
+        }))
       }
 
       return res.redirect(`https://api.instagram.com/oauth/authorize/?${Qs.stringify(params)}`)

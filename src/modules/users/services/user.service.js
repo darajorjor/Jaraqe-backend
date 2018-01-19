@@ -13,14 +13,11 @@ export default {
                                 website,
                               }, accessToken) {
     let user = await UserRepository.findByInstagramId(id)
-    if (user) {
-      throw new Error(messages.ALREADY_REGISTERED)
-    }
-
-    user = {}
-    user.avatars = [profile_picture]
-    user.additional_data = {
+    let data = {}
+    data.avatar = profile_picture
+    data.oauth = {
       instagram: {
+        id,
         fullName: full_name,
         bio,
         isBusiness: is_business,
@@ -29,7 +26,11 @@ export default {
         accessToken
       }
     }
-    user.status = status.USER.ACTIVE
-    return UserRepository.registerUser(user)
+
+    if (!user) {
+      return UserRepository.registerUser(data)
+    }
+
+    return user.update(data)
   }
 }

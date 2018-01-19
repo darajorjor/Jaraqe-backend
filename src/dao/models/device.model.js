@@ -1,49 +1,35 @@
-import { Sequelize, sequelize } from 'connections/postgres'
-import deviceType from 'src/constants/enums/deviceTypes.enum'
+import mongoose from 'src/dao/connections/mongo'
+import deviceTypes from 'src/constants/enums/deviceTypes.enum'
 
-const Device = sequelize.define('device', {
-  id: {
-    primaryKey: true,
-    allowNull: false,
-    unique: true,
-    type: Sequelize.UUID,
-    defaultValue: Sequelize.UUIDV4,
-  },
+const DeviceSchema = new mongoose.Schema({
   token: {
+    type: String,
     allowNull: false,
     unique: true,
-    type: Sequelize.STRING,
   },
   unique_id: {
+    type: String,
     allowNull: false,
-    type: Sequelize.STRING,
   },
   type: {
     allowNull: false,
-    type: Sequelize.ENUM(
-      deviceType.ANDROID,
-      deviceType.IOS,
-      deviceType.WEB_APP,
-    ),
+    enum: Object.values(deviceTypes)
   },
-  app_version: {
+  appVersion: {
     allowNull: false,
-    type: Sequelize.STRING,
+    type: String,
   },
-  device_info: {
-    allowNull: false,
-    type: Sequelize.JSONB,
-    defaultValue: {},
-  },
-  additional_data: {
-    allowNull: false,
-    type: Sequelize.JSONB,
-    defaultValue: {},
-  },
-}, {
-  timestamps: true,
-  createdAt: 'created_at',
-  updatedAt: 'updated_at',
-})
+  versionHistory: [{
+    appVersion: String,
+    date: Date,
+  }],
+  deviceInfo: {},
+}, { timestamps: true });
 
-export default Device
+DeviceSchema.method = {
+  //
+};
+
+const Device = mongoose.model('Device', DeviceSchema);
+
+export default Device;
