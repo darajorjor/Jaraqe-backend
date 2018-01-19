@@ -28,4 +28,8 @@ export default {
   USER_NOT_FOUND: 'user_not_found',
   GAME_CREATED_SUCCESSFULLY: 'game_created_successfully',
   NO_ONE_MATCHED: 'no_one_matched',
+  LETTER_NOT_VALID: 'letter_not_valid',
+  NOT_YOUR_GAME: 'not_your_game',
+  WORD_NOT_IN_DICTIONARY: 'word_not_in_dictionary',
+  NOT_YOUR_TURN: 'not_your_turn',
 }

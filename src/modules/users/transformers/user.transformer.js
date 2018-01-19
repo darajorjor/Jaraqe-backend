@@ -1,8 +1,8 @@
 import { transform } from 'transformobject';
 
 const rules = {
-  id: 'id',
-  full_name: 'full_name',
+  id: '_id',
+  fullName: 'fullName',
   avatar: 'avatar',
 };
 

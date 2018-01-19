@@ -21,7 +21,7 @@ export default async (request, response, next) => {
       return response.build.unauthorized(response.messages.FORBIDDEN_USER)
     }
     request.user = {
-      id: user._id,
+      id: user._id.toString(),
       status: user.status,
       isGuest: false,
     }

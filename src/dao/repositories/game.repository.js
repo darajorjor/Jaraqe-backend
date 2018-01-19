@@ -1,17 +1,26 @@
 import { Game } from '../models'
 
 export default {
-  createGame({ players, board }) {
-    const randomFirstPlay = players[Math.floor(Math.random() * players.length)]
+  findOne(data) {
+    return Game.findOne(data)
+  },
+
+  async createGame({ players, board, letters }) {
+    const randomFirstPlay = players[Math.floor(Math.random() * players.length)].userId
 
     const game = new Game({
-      players: players.map(userId => ({
+      players: players.map(({ userId, rack }) => ({
         userId,
         score: 0,
         shouldPlayNext: userId === randomFirstPlay,
+        rack,
       })),
+      letters,
       board
     })
+
+    await Game.populate(game, { path: 'players.userId' })
+    await Game.populate(game, { path: 'board' })
 
     return game.save()
   },
@@ -25,10 +34,15 @@ export default {
       ]
     }
 
-    return Game.find(where).limit(10).exec()
+    return Game.find(where)
+      .limit(10)
+      .populate('players.userId')
+      .populate('board')
+      .exec()
   },
 
-  methods: {
-    //
+  async play() {
+
   }
 }
+
