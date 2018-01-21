@@ -1,3 +1,9 @@
 {
-	"Hello": "سلام",
+	"device_created": "دستگاه با موفقیت ساخته شد",
+	"no_service_selected": "لطفا سرویس لاگین را انتخاب کنید",
+	"game_created_successfully": "بازی با موفقیت ساخته شد",
+	"no_one_matched": "کسی پیدا نشد",
+	"letter_not_valid": "واژه قابل قبول نیست",
+	"not_your_game": "بازی شما نیست",
+	"not_your_turn": "نوبت شما نیست"
 }
