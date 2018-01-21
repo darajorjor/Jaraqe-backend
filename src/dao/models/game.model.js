@@ -40,6 +40,7 @@ const GameSchema = new mongoose.Schema({
       allowNull: false,
     },
     lettersUsed: [{
+      _id: false,
       letterId: String,
       letterValue: String,
       letterPoint: Number,
@@ -52,17 +53,34 @@ const GameSchema = new mongoose.Schema({
         col: Number,
       },
     }],
-    wordId: {
-      type: mongoose.Schema.ObjectId,
-      ref: 'Word',
-      allowNull: false,
-    },
-    word: String,
-    wordPoint: Number,
-    wordBonus: {
-      type: String,
-      allowNull: true
-    },
+    words: [{
+      id: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Word',
+        allowNull: false,
+      },
+      word: String,
+      letters: [{
+        _id: false,
+        id: String,
+        value: String,
+        point: Number,
+        letterBonus: {
+          type: String,
+          enum: Object.values(boardEnums.BONUSES)
+        },
+        coordinates: {
+          row: Number,
+          col: Number,
+        },
+      }],
+      score: Number,
+      wordPoint: Number,
+      wordBonus: {
+        type: String,
+        allowNull: true
+      },
+    }],
     totalScore: Number,
     time: Date,
   }],
@@ -74,6 +92,7 @@ const GameSchema = new mongoose.Schema({
     },
     value: String,
     point: Number,
+    bonus: String,
     isUsed: {
       type: Boolean,
       default: false,
@@ -93,6 +112,7 @@ GameSchema.methods = {
           id: letter.letterId,
           point: letter.letterPoint,
           value: letter.letterValue,
+          bonus: pattern[row][col] ? pattern[row][col] : undefined,
         }
       })
     })
@@ -116,7 +136,7 @@ GameSchema.methods = {
       })
     })
   },
-  async play({ userId, letters, word, wordBonus, wordPoint, score }) {
+  async play({ userId, letters, words }) {
     // add history
     this.history.push({
       player: userId,
@@ -127,15 +147,13 @@ GameSchema.methods = {
         letterBonus: l.bonus,
         coordinates: l.coordinates,
       })),
-      wordId: word._id,
-      word: word.word,
-      wordPoint,
-      wordBonus,
-      totalScore: score,
+      words,
+      totalScore: words.reduce((total, i) => ({ score: total.score + i.score }), { score: 0 }).score,
       time: new Date(),
     })
 
-    const shouldPlayNext = this.players.filter(p => p.userId !== userId)[Math.floor(Math.random() * this.players.length)].userId
+    // selecting next player
+    const shouldPlayNext = this.players.filter(p => p.userId.toString() !== userId)[0].userId
 
     // use letters
     this.letters = this.letters.map((letter) => {
@@ -150,9 +168,7 @@ GameSchema.methods = {
 
     // change turn
     this.players = this.players.map((player) => {
-      if (player.userId.toString() === shouldPlayNext.toString()) {
-        player.shouldPlayNext = true
-      }
+      player.shouldPlayNext = player.userId.toString() === shouldPlayNext.toString();
 
       if (player.userId.toString() === userId) {
         player.shouldPlayNext = false

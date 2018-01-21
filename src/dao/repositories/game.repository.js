@@ -6,13 +6,13 @@ export default {
   },
 
   async createGame({ players, board, letters }) {
-    const randomFirstPlay = players[Math.floor(Math.random() * players.length)].userId
+    // const randomFirstPlay = players[Math.floor(Math.random() * players.length)].userId
 
     const game = new Game({
-      players: players.map(({ userId, rack }) => ({
+      players: players.map(({ userId, rack, shouldPlayNext }, index) => ({
         userId,
         score: 0,
-        shouldPlayNext: userId === randomFirstPlay,
+        shouldPlayNext,
         rack,
       })),
       letters,

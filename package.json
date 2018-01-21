@@ -7,6 +7,7 @@
     "start": "node_modules/.bin/babel-node $NODE_DEBUG_OPTION src/app.js",
     "start:nodemon": "nodemon node_modules/.bin/babel-node --inspect=9222 src/app.js",
     "build": "node_modules/.bin/babel ./src/ -d build/ --copy-files",
+    "start:prod": "./node_modules/.bin/sequelize db:migrate --config build/config/sequelize.js --migrations-path migrations/ && node ./build/app.js",
     "db:migration:latest": "./node_modules/.bin/sequelize db:migrate --options-path=./src/config/sequelize.options.json",
     "db:migration:revert": "./node_modules/.bin/sequelize db:migrate:undo --options-path=./src/config/sequelize.options.json",
     "db:migration:revert:all": "./node_modules/.bin/sequelize db:migrate:undo:all --options-path=./src/config/sequelize.options.json"

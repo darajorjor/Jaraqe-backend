@@ -46,6 +46,7 @@ module.exports = {
 
         const savedUser = await UserService.registerInstagramUser(user, accessToken)
 
+        debugger
         return res.send(Handlebars.compile(returnToApp.toString())({
           data: JSON.stringify({
               user: userTransform(savedUser),
@@ -55,6 +56,7 @@ module.exports = {
         }))
       }
 
+      console.log('redirecting to instagram')
       return res.redirect(`https://api.instagram.com/oauth/authorize/?${Qs.stringify(params)}`)
     } catch (error) {
       switch (error.message) {

@@ -1,0 +1,18 @@
+stages:
+  - build
+
+## Development
+build:core:dev:
+  stage: build
+  image: docker:latest
+  services:
+  - docker:dind
+  only:
+    - master
+  script:
+  - docker info
+#  - docker login -p $ABARCLOUD_TOKEN_DEV -u unused registry.abarcloud.com
+  - docker build -t mehdijjz/jaraqe-backend .
+  - docker images
+  - docker run -p 80:3000 -d mehdijjz/jaraqe-backend
+#  - docker push registry.abarcloud.com/hampa-dev/backend-core:latest

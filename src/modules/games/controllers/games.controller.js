@@ -51,14 +51,19 @@ export default {
       const { user: { id } } = req
 
       //validate letters and letters on board
-      const { direction, letters, score, game, wordBonus, wordPoint } = await gameService.validateLetters({ userId: id, gameId, letters: rawLetters })
-
-      //check if they form a word
       //check bonuses
-      const word = await gameService.checkWord(direction, letters)
+      const { letters, game, words } = await gameService.validateLetters({ userId: id, gameId, letters: rawLetters })
+
+      if (words.length === 0) {
+        return res.build.notFound(messages.WORD_NOT_IN_DICTIONARY)
+      }
+      //check if they form a word
+      await Promise.all(words.map(async (word) => {
+        await gameService.checkWord(word.word)
+      }))
 
       //use it
-      const newGame = await gameService.play({ userId: id, game, word, score, letters, wordBonus, wordPoint })
+      const newGame = await gameService.play({ userId: id, game, words, letters })
 
       return res.build.success({ game: transformGame(newGame.toObject()) })
     } catch (error) {

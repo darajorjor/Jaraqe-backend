@@ -5,5 +5,6 @@
 	"no_one_matched": "کسی پیدا نشد",
 	"letter_not_valid": "واژه قابل قبول نیست",
 	"not_your_game": "بازی شما نیست",
-	"not_your_turn": "نوبت شما نیست"
+	"not_your_turn": "نوبت شما نیست",
+	"should_touch_old_tiles": "جدیدا باید با قدیما باشن"
 }

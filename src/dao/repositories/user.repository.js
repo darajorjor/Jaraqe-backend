@@ -6,6 +6,9 @@ export default {
   findOne(data) {
     return User.findOne(data)
   },
+  findOneAndUpdate(id, data) {
+    return User.findOneAndUpdate(id, data)
+  },
 
   async findBySession(session) {
     return User.findOne({
@@ -19,6 +22,7 @@ export default {
       'oauth.instagram.id': id,
       status: { $ne: status.USER.INACTIVE },
     })
+
     if (!dbUser) {
       return null
     }
@@ -31,12 +35,4 @@ export default {
     const newUser = new User(data)
     return newUser.save()
   },
-
-  methods: {
-    update(data) {
-      this.avatar = data.avatar
-      this.oauth = data.oauth
-      return this.save()
-    }
-  }
 }

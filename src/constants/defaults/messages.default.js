@@ -32,4 +32,5 @@ export default {
   NOT_YOUR_GAME: 'not_your_game',
   WORD_NOT_IN_DICTIONARY: 'word_not_in_dictionary',
   NOT_YOUR_TURN: 'not_your_turn',
+  SHOULD_TOUCH_OLD_TILES: 'should_touch_old_tiles',
 }

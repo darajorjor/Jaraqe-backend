@@ -14,10 +14,11 @@ export default {
                               }, accessToken) {
     let user = await UserRepository.findByInstagramId(id)
     let data = {}
+    data.username = username
+    data.fullName = full_name
     data.avatar = profile_picture
     data.oauth = {
       instagram: {
-        id,
         fullName: full_name,
         bio,
         isBusiness: is_business,
@@ -28,9 +29,10 @@ export default {
     }
 
     if (!user) {
+      data.oauth.instagram.id = id
       return UserRepository.registerUser(data)
     }
 
-    return user.update(data)
+    return UserRepository.findOneAndUpdate(user._id, data)
   }
 }
