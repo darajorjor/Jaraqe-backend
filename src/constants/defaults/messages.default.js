@@ -26,7 +26,6 @@ export default {
   AGE_UNDER_18: 'age_under_18',
   NO_SERVICE_SELECTED: 'no_service_selected',
   USER_NOT_FOUND: 'user_not_found',
-  FRIEND_REQUEST_NOT_FOUND: 'friend_request_not_found',
   GAME_CREATED_SUCCESSFULLY: 'game_created_successfully',
   NO_ONE_MATCHED: 'no_one_matched',
   LETTER_NOT_VALID: 'letter_not_valid',
@@ -34,5 +33,4 @@ export default {
   WORD_NOT_IN_DICTIONARY: 'word_not_in_dictionary',
   NOT_YOUR_TURN: 'not_your_turn',
   SHOULD_TOUCH_OLD_TILES: 'should_touch_old_tiles',
-  FRIEND_REQUEST_ALREADY_SENT: 'friend_request_already_sent',
 }
