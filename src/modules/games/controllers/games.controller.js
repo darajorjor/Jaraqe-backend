@@ -28,6 +28,25 @@ export default {
       }
     }
   },
+  async playWithUser(req, res, next) {
+    try {
+      const { user: { id } } = req
+      const { userId } = req.params
+
+      //create a game
+      const game = await gameService.startGame({
+        player: id,
+        player2: userId
+      })
+
+      return res.build.success({ game: transformGame(game) }, res.messages.GAME_CREATED_SUCCESSFULLY)
+    } catch (error) {
+      switch (error.message) {
+        default:
+          return next(error);
+      }
+    }
+  },
 
   async listGames(req, res, next) {
     try {

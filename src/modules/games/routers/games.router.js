@@ -21,6 +21,13 @@ router.post('/smart-match',
   gamesController.smartMatch,
 )
 
+router.post('/play-with-user/:userId',
+  // deviceMiddleware,
+  userMiddleware,
+  // validate(rules.registerDevice),
+  gamesController.playWithUser,
+)
+
 router.post('/:gameId/play',
   // deviceMiddleware,
   userMiddleware,

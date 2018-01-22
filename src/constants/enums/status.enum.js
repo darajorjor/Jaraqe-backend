@@ -11,4 +11,9 @@ export default {
     PENDING: 'PENDING',
   },
   USER_DEVICE: DEFAULT_TYPE,
+  FRIEND_REQUEST: {
+    PENDING: 'PENDING',
+    ACCEPTED: 'ACCEPTED',
+    DECLINED: 'DECLINED',
+  },
 }
