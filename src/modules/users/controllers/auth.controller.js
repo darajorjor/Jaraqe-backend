@@ -46,7 +46,6 @@ module.exports = {
 
         const savedUser = await UserService.registerInstagramUser(user, accessToken)
 
-        debugger
         return res.send(Handlebars.compile(returnToApp.toString())({
           data: JSON.stringify({
               user: userTransform(savedUser),

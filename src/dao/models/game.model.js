@@ -26,7 +26,7 @@ const GameSchema = new mongoose.Schema({
       id: String,
       value: String,
       point: Number
-    }]
+    }],
   }],
   board: {
     type: mongoose.Schema.ObjectId,

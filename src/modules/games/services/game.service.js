@@ -391,8 +391,6 @@ export default {
       })
     }
 
-    debugger
-
     return {
       letters,
       words,
