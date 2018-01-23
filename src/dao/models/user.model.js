@@ -57,15 +57,18 @@ const UserSchema = new mongoose.Schema({
   oauth: {
     instagram: {},
   },
-  friends: [{
-    type: mongoose.Schema.ObjectId,
-    ref: 'User',
-    allowNull: false,
-  }],
-  friendRequests: [{
-    type: FriendRequest,
+  friends: {
+    type: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'User',
+      allowNull: false,
+    },
     default: [],
-  }],
+  },
+  friendRequests: {
+    type: [FriendRequest],
+    default: [],
+  },
 }, { timestamps: true });
 
 UserSchema.methods = {

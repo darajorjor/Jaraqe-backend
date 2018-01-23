@@ -5,29 +5,32 @@ import Board from './board.model'
 import shuffleArray from '../../utils/helpers/shuffleArray'
 
 const GameSchema = new mongoose.Schema({
-  players: [{
-    userId: {
-      type: mongoose.Schema.ObjectId,
-      ref: 'User',
-      allowNull: false,
-    },
-    score: {
-      type: Number,
-      default: 0,
-    },
-    timeLeft: Number,
-    shouldPlayNext: {
-      type: Boolean,
-      default: false,
-      allowNull: false,
-    },
-    rack: [{
-      _id: false,
-      id: String,
-      value: String,
-      point: Number
+  players: {
+    type: [{
+      userId: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+        allowNull: false,
+      },
+      score: {
+        type: Number,
+        default: 0,
+      },
+      timeLeft: Number,
+      shouldPlayNext: {
+        type: Boolean,
+        default: false,
+        allowNull: false,
+      },
+      rack: [{
+        _id: false,
+        id: String,
+        value: String,
+        point: Number
+      }],
     }],
-  }],
+    default: [],
+  },
   board: {
     type: mongoose.Schema.ObjectId,
     ref: 'Board',
