@@ -3,7 +3,7 @@ import config from 'src/config/app.config'
 import requestify from 'requestify'
 import UserService from '../services/user.service'
 import messages from 'src/constants/defaults/messages.default'
-import userTransform from '../transformers/user.transformer'
+import { transformSelfProfile } from '../transformers/user.transformer'
 import Handlebars from 'handlebars'
 import { returnToApp } from 'src/utils/templates'
 
@@ -48,7 +48,7 @@ module.exports = {
 
         return res.send(Handlebars.compile(returnToApp.toString())({
           data: JSON.stringify({
-              user: userTransform(savedUser),
+              user: transformSelfProfile(savedUser),
               session: savedUser.session,
             }
           )

@@ -58,11 +58,11 @@ const UserSchema = new mongoose.Schema({
     instagram: {},
   },
   friends: {
-    type: {
+    type: [{
       type: mongoose.Schema.ObjectId,
       ref: 'User',
       allowNull: false,
-    },
+    }],
     default: [],
   },
   friendRequests: {
