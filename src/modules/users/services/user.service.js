@@ -120,6 +120,7 @@ export default {
     data.avatar = profile_picture
     data.oauth = {
       instagram: {
+        id,
         fullName: full_name,
         bio,
         isBusiness: is_business,
@@ -130,7 +131,6 @@ export default {
     }
 
     if (!user) {
-      data.oauth.instagram.id = id
       return UserRepository.registerUser(data)
     }
 

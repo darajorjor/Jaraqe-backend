@@ -1,3 +1,4 @@
+import mongoose from 'mongoose'
 import UserRepo from 'repositories/user.repository'
 import WordRepo from 'repositories/word.repository'
 import GameRepo from 'repositories/game.repository'
@@ -6,11 +7,23 @@ import shuffleArray from 'src/utils/helpers/shuffleArray'
 import boardDefaults from 'src/constants/defaults/board.default'
 import messages from 'src/constants/defaults/messages.default'
 import uuid from 'uuid/v4'
+import _ from 'lodash'
 import { checkSiblingTiles } from '../../../utils/helpers/game.hepler'
+
+String.prototype.splice = function(idx, rem, str) {
+  return this.slice(0, idx) + str + this.slice(idx + Math.abs(rem))
+}
+
+function sortHorizontally(a, b) {
+  return b.coordinates.col - a.coordinates.col
+}
+function sortVertically(a, b) {
+  return a.coordinates.row - b.coordinates.row
+}
 
 export default {
   match(userId) {
-    return UserRepo.findOne({ _id: { $ne: userId } })
+    return UserRepo.findOne({ _id: { $ne: mongoose.Types.ObjectId(userId) } })
   },
 
   async startGame({ player, player2 }) {
@@ -52,7 +65,6 @@ export default {
   },
 
   async validateLetters({ userId, gameId, letters }) {
-    debugger
     const game = await GameRepo.findOne({ _id: gameId })
     let wordBonus = null
     // check if the letters are in the player's rack
@@ -172,7 +184,7 @@ export default {
       let word = ''
       if (allInColumn) {
         if (sort) {
-          arr.sort((a, b) => a.coordinates.row - b.coordinates.row).forEach((letter) => {
+          arr.sort(sortVertically).forEach((letter) => {
             word += letter.value
           })
         } else {
@@ -182,7 +194,7 @@ export default {
         }
       } else if (allInRow) {
         if (sort) {
-          arr.sort((a, b) => b.coordinates.col - a.coordinates.col).forEach((letter) => {
+          arr.sort(sortHorizontally).forEach((letter) => {
             word += letter.value
           })
         } else {
@@ -200,13 +212,37 @@ export default {
 
         const { top, bottom, left, right } = checkSiblingTiles(filledBoard, row, col)
         let topWords = []
-        if (top) topWords.push(top)
+        if (top) topWords.push({
+          ...top,
+          coordinates: {
+            row: row - 1,
+            col,
+          },
+        })
         let bottomWords = []
-        if (bottom) bottomWords.push(bottom)
+        if (bottom) bottomWords.push({
+          ...bottom,
+          coordinates: {
+            row: row + 1,
+            col,
+          },
+        })
         let leftWords = []
-        if (left) leftWords.push(left)
+        if (left) leftWords.push({
+          ...left,
+          coordinates: {
+            row,
+            col: col - 1,
+          },
+        })
         let rightWords = []
-        if (right) rightWords.push(right)
+        if (right) rightWords.push({
+          ...right,
+          coordinates: {
+            row,
+            col: col + 1,
+          },
+        })
 
         if (top) {
           let rowIndex = row
@@ -215,7 +251,13 @@ export default {
 
             if (t) {
               rowIndex--
-              topWords.push(t)
+              topWords.push({
+                ...t,
+                coordinates: {
+                  row: rowIndex - 1,
+                  col,
+                }
+              })
             } else {
               break
             }
@@ -228,7 +270,14 @@ export default {
 
             if (t) {
               rowIndex++
-              bottomWords.push(t)
+              bottomWords.push({
+                  ...t,
+                  coordinates: {
+                    row: rowIndex + 1,
+                    col,
+                  }
+                }
+              )
             } else {
               break
             }
@@ -241,7 +290,13 @@ export default {
 
             if (t) {
               colIndex--
-              leftWords.push(t)
+              leftWords.push({
+                ...t,
+                coordinates: {
+                  row,
+                  col: colIndex - 1,
+                }
+              })
             } else {
               break
             }
@@ -254,7 +309,13 @@ export default {
 
             if (t) {
               colIndex++
-              rightWords.push(t)
+              rightWords.push({
+                ...t,
+                coordinates: {
+                  row,
+                  col: colIndex + 1,
+                }
+              })
             } else {
               break
             }
@@ -377,8 +438,18 @@ export default {
           ...wordSuffix
         ]
 
+        mainLetters = _.uniqBy(mainLetters, 'id')
+
+        if (allInColumn) {
+          mainLetters = mainLetters.sort(sortVertically)
+        } else if (allInRow) {
+          mainLetters = mainLetters.sort(sortHorizontally)
+        }
+
+        const word = getWordFromLetters(mainLetters, allInColumn, allInRow, true)
+
         words.push({
-          word: `${wordPrefix.map(l => l.value)}${getWordFromLetters(letters, allInColumn, allInRow, true)}${wordSuffix.map(l => l.value)}`,
+          word,
           letters: mainLetters,
           ...calcWord(mainLetters)
         }) // word here!
@@ -391,9 +462,11 @@ export default {
       })
     }
 
+    debugger
+
     return {
       letters,
-      words,
+      words: [],
       game,
     }
   },
