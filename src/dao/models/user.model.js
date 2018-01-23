@@ -5,6 +5,28 @@ import genderTypes from 'src/constants/enums/genderTypes.enum'
 import friendRequestTypes from 'src/constants/enums/friendRequestTypes.enum'
 import messages from 'src/constants/defaults/messages.default'
 
+const FriendRequest = new mongoose.Schema({
+  _id: false,
+  id: {
+    type: String,
+    allowNull: false,
+  },
+  user: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'User',
+    allowNull: false,
+  },
+  requestType: {
+    type: String,
+    enum: Object.values(friendRequestTypes)
+  },
+  status: {
+    type: String,
+    enum: Object.values(statuses.FRIEND_REQUEST),
+    default: statuses.FRIEND_REQUEST.PENDING
+  }
+})
+
 const UserSchema = new mongoose.Schema({
   username: String,
   firstName: String,
@@ -39,28 +61,10 @@ const UserSchema = new mongoose.Schema({
     type: mongoose.Schema.ObjectId,
     ref: 'User',
     allowNull: false,
-    default: []
   }],
   friendRequests: [{
-    _id: false,
-    id: {
-      type: String,
-      allowNull: false,
-    },
-    user: {
-      type: mongoose.Schema.ObjectId,
-      ref: 'User',
-      allowNull: false,
-    },
-    requestType: {
-      type: String,
-      enum: Object.values(friendRequestTypes)
-    },
-    status: {
-      type: String,
-      enum: Object.values(statuses.FRIEND_REQUEST),
-      default: statuses.FRIEND_REQUEST.PENDING
-    }
+    type: FriendRequest,
+    default: [],
   }],
 }, { timestamps: true });
 
