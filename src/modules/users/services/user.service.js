@@ -134,6 +134,6 @@ export default {
       return UserRepository.registerUser(data)
     }
 
-    return UserRepository.findOneAndUpdate(user._id, data)
+    return UserRepository.findOneAndUpdate({ _id: user._id }, data)
   }
 }

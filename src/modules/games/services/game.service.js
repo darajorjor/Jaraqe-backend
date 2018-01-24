@@ -466,7 +466,7 @@ export default {
 
     return {
       letters,
-      words: [],
+      words,
       game,
     }
   },
