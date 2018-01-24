@@ -54,7 +54,25 @@ export default {
       const { user: { id } } = req
 
       const result = await gameService.listGames({ userId: id, lastKey })
+      debugger
       return res.build.success(result.map(game => transformGame(game)))
+    } catch (error) {
+      switch (error.message) {
+        default:
+          return next(error);
+      }
+    }
+  },
+
+  async getGame(req, res, next) {
+    try {
+      debugger
+      const { user: { id } } = req
+      const { gameId } = req.params
+
+      const game = await gameService.getGame({ userId: id, gameId })
+
+      return res.build.success(transformGame(game))
     } catch (error) {
       switch (error.message) {
         default:
@@ -84,7 +102,9 @@ export default {
       //use it
       const newGame = await gameService.play({ userId: id, game, words, letters })
 
-      return res.build.success({ game: transformGame(newGame.toObject()) })
+      debugger
+
+      return res.build.success({ game: transformGame(newGame) })
     } catch (error) {
       switch (error.message) {
         case messages.LETTER_NOT_VALID:
@@ -100,8 +120,5 @@ export default {
           return next(error);
       }
     }
-  },
-
-  getGame() {
   },
 }

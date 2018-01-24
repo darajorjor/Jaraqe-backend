@@ -7,13 +7,6 @@ import { gamesController } from '../controllers'
 
 const router = Router()
 
-router.get('/',
-  // deviceMiddleware,
-  userMiddleware,
-  // validate(rules.registerDevice),
-  gamesController.listGames,
-)
-
 router.post('/smart-match',
   // deviceMiddleware,
   userMiddleware,
@@ -33,6 +26,20 @@ router.post('/:gameId/play',
   userMiddleware,
   // validate(rules.registerDevice),
   gamesController.playGame,
+)
+
+router.get('/:gameId',
+  // deviceMiddleware,
+  userMiddleware,
+  // validate(rules.registerDevice),
+  gamesController.getGame,
+)
+
+router.get('/',
+  // deviceMiddleware,
+  userMiddleware,
+  // validate(rules.registerDevice),
+  gamesController.listGames,
 )
 
 module.exports = router

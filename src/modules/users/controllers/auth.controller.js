@@ -32,6 +32,7 @@ module.exports = {
         params.grant_type = 'authorization_code'
         params.code = code
         delete params.response_type
+        console.log('requesting access token from instagram...')
         const data = await requestify.request(`https://api.instagram.com/oauth/access_token`, {
           method: 'POST',
           body: params,
@@ -55,7 +56,7 @@ module.exports = {
         }))
       }
 
-      console.log('redirecting to instagram')
+      console.log('redirecting to instagram...')
       return res.redirect(`https://api.instagram.com/oauth/authorize/?${Qs.stringify(params)}`)
     } catch (error) {
       switch (error.message) {

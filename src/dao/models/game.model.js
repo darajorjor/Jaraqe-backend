@@ -182,6 +182,9 @@ GameSchema.methods = {
       return player
     })
 
+    await Game.populate(this, { path: 'board' })
+    await Game.populate(this, { path: 'players.userId' })
+
     return this.save()
   },
 }

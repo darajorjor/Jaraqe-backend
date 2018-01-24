@@ -41,6 +41,13 @@ export default {
       .exec()
   },
 
+  async get(gameId) {
+    return Game.findById(gameId)
+      .populate('players.userId')
+      .populate('board')
+      .exec()
+  },
+
   async play() {
 
   }

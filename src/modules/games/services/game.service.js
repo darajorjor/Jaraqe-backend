@@ -10,7 +10,7 @@ import uuid from 'uuid/v4'
 import _ from 'lodash'
 import { checkSiblingTiles } from '../../../utils/helpers/game.hepler'
 
-String.prototype.splice = function(idx, rem, str) {
+String.prototype.splice = function (idx, rem, str) {
   return this.slice(0, idx) + str + this.slice(idx + Math.abs(rem))
 }
 
@@ -50,18 +50,21 @@ export default {
       letters,
     })
 
-    return this.transformGame(player, game.toObject())
+    return this.controlRacks(player, game.toObject())
   },
 
   async listGames({ userId, lastKey }) {
     const games = await GameRepo.list({ userId, lastKey })
     return Promise.all(games.map(async g => {
-        const pattern = await g.fillBoard()
-        g = g.toObject()
-        g.board.pattern = pattern
-        return this.transformGame(userId, g)
+        return this.controlRacks(userId, await this.preTransformGame(g))
       })
     )
+  },
+
+  async getGame({ userId, gameId }) {
+    let game = await GameRepo.get(gameId)
+
+    return this.controlRacks(userId, await this.preTransformGame(game))
   },
 
   async validateLetters({ userId, gameId, letters }) {
@@ -161,6 +164,7 @@ export default {
     // check if at least one letter touches old letters
     // check validity with old characters
     const words = []
+
     function calcWord(arrOfLetters) {
       let totalPoints = arrOfLetters.reduce((total, i) => ({ point: total.point + i.point })).point
       const wordPoint = totalPoints
@@ -180,6 +184,7 @@ export default {
         wordBonus,
       }
     }
+
     function getWordFromLetters(arr, allInColumn, allInRow, sort) {
       let word = ''
       if (allInColumn) {
@@ -206,6 +211,7 @@ export default {
 
       return word
     }
+
     if (game.history.length > 0) {
       function letterHandler(letter) {
         const { coordinates: { row, col } } = letter
@@ -390,7 +396,7 @@ export default {
           if (allInRow) {
             wordSuffix.push(...leftWords)
             wordPrefix.push(...rightWords)
-            if (topWords.length === 0 && bottomWords.length === 0 ) {
+            if (topWords.length === 0 && bottomWords.length === 0) {
               return null
             }
             let sideLetters = [
@@ -409,7 +415,7 @@ export default {
           } else if (allInColumn) {
             wordSuffix.push(...bottomWords)
             wordPrefix.push(...topWords)
-            if (rightWords.length === 0 && leftWords.length === 0 ) {
+            if (rightWords.length === 0 && leftWords.length === 0) {
               return null
             }
             let sideLetters = [
@@ -495,14 +501,35 @@ export default {
       throw new Error(messages.NOT_YOUR_TURN)
     }
 
-    return game.play({
+    let playedGame = await game.play({
       userId,
       letters,
       words,
     })
+
+    return this.controlRacks(userId, await this.preTransformGame(playedGame))
   },
 
-  transformGame(userId, game) {
+  async preTransformGame(game) {
+    const pattern = await game.fillBoard()
+    game = game.toObject()
+    game.board.pattern = pattern
+    game.players = game.players.map((player) => {
+      let score = 0
+      game.history.forEach((history) => {
+        if (player.userId._id.toString() === history.player.toString()) {
+          score += history.totalScore
+        }
+      })
+
+      player.score = score
+      return player
+    })
+
+    return game
+  },
+  controlRacks(userId, game) {
+    debugger
     game.players = game.players.map((player) => {
       if (player.userId._id) {
         if (player.userId._id.toString() !== userId) { // populated
