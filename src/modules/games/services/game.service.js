@@ -1,4 +1,3 @@
-import mongoose from 'mongoose'
 import UserRepo from 'repositories/user.repository'
 import WordRepo from 'repositories/word.repository'
 import GameRepo from 'repositories/game.repository'
@@ -8,7 +7,11 @@ import boardDefaults from 'src/constants/defaults/board.default'
 import messages from 'src/constants/defaults/messages.default'
 import uuid from 'uuid/v4'
 import _ from 'lodash'
-import { checkSiblingTiles } from '../../../utils/helpers/game.hepler'
+import { checkSiblingTiles } from 'src/utils/helpers/game.hepler'
+import sendPush from 'src/utils/push'
+import notificationTypes from 'src/constants/enums/notificationTypes.enum'
+import notificationPriorities from 'src/constants/enums/notificationPriorities.enum'
+import notificationDestinations from 'src/constants/enums/notificationDestinations.enum'
 
 String.prototype.splice = function (idx, rem, str) {
   return this.slice(0, idx) + str + this.slice(idx + Math.abs(rem))
@@ -23,7 +26,7 @@ function sortVertically(a, b) {
 
 export default {
   match(userId) {
-    return UserRepo.findOne({ _id: { $ne: mongoose.Types.ObjectId(userId) } })
+    return UserRepo.matchGame(userId)
   },
 
   async startGame({ player, player2 }) {
@@ -507,6 +510,17 @@ export default {
       words,
     })
 
+    const nextPlayer = playedGame.players.find(pl => pl.shouldPlayNext)
+    const otherPlayer = playedGame.players.find(pl => !pl.shouldPlayNext)
+    await sendPush({
+      userId: nextPlayer.userId.id,
+      title: 'نوبت توئه!',
+      message: `${otherPlayer.userI} منتظرته، نوبتتو بازی کن`,
+      type: notificationTypes.GAME,
+      priority: notificationPriorities.HIGH,
+      destination: notificationDestinations.GAME,
+    })
+
     return this.controlRacks(userId, await this.preTransformGame(playedGame))
   },
 
@@ -529,7 +543,6 @@ export default {
     return game
   },
   controlRacks(userId, game) {
-    debugger
     game.players = game.players.map((player) => {
       if (player.userId._id) {
         if (player.userId._id.toString() !== userId) { // populated

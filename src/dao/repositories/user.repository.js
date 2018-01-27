@@ -1,6 +1,7 @@
 import { User } from '../models'
 import status from 'src/constants/enums/status.enum'
 import uuid from 'uuid/v4'
+import mongoose from 'mongoose'
 
 export default {
   findById(data) {
@@ -11,6 +12,20 @@ export default {
   },
   findOneAndUpdate(id, data) {
     return User.findOneAndUpdate(id, { $set: data })
+  },
+  async matchGame(id) {
+    const users = await User.aggregate([
+      {
+        $match: {
+          _id: { $ne: mongoose.Types.ObjectId(id) }
+        }
+      },
+      {
+        $sample: { size: 1 }
+      }
+    ])
+
+    return users[0]
   },
   search(query) {
     return User.find({

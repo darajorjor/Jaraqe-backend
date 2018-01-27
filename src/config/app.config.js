@@ -26,4 +26,17 @@ export default {
   },
   instagramClientId: process.env.INSTAGRAM_CLIENT_ID,
   instagramClientSecret: process.env.INSTAGRAM_CLIENT_SECRET,
+  onesignal: {
+    apiKeys: [
+      process.env.ONESIGNAL_API_KEY_JARAQE_DEFAULT,
+    ],
+    appIds: [
+      process.env.ONESIGNAL_APP_ID_JARAQE_DEFAULT,
+    ],
+  },
+  redis: {
+    port: process.env.REDIS_PORT,
+    host: process.env.REDIS_HOST,
+    password: process.env.REDIS_PASSWORD,
+  },
 }

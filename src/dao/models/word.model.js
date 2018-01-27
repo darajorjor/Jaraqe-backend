@@ -10,8 +10,15 @@ const WordSchema = new mongoose.Schema({
     type: String,
     allowNull: false,
   },
+  wiki: [{
+    _id: false,
+    title: String,
+    pageId: Number,
+  }],
+  wikiChecked: Date,
   definitions: [
     {
+      _id: false,
       text: String
     },
   ],

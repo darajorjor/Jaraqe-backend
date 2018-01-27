@@ -33,4 +33,5 @@ export default {
   WORD_NOT_IN_DICTIONARY: 'word_not_in_dictionary',
   NOT_YOUR_TURN: 'not_your_turn',
   SHOULD_TOUCH_OLD_TILES: 'should_touch_old_tiles',
+  WORD_NOT_FOUND: 'word_not_found',
 }

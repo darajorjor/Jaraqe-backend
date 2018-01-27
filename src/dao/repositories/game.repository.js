@@ -1,4 +1,5 @@
 import { Game } from '../models'
+import mongoose from 'mongoose'
 
 export default {
   findOne(data) {
@@ -26,7 +27,7 @@ export default {
   },
 
   async list({ userId, lastKey }) {
-    const where = { _id: { $ne: userId } }
+    const where = { 'players.userId': mongoose.Types.ObjectId(userId) }
     if (lastKey) {
       const lastGame = await Game.findById(lastKey)
       where.$or = [

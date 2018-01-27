@@ -57,6 +57,7 @@ const GameSchema = new mongoose.Schema({
       },
     }],
     words: [{
+      _id: false,
       id: {
         type: mongoose.Schema.ObjectId,
         ref: 'Word',
@@ -108,15 +109,21 @@ GameSchema.methods = {
     const board = await Board.findById(this.board)
     const { pattern } = board.toObject()
     this.history.map((history) => {
-      history.lettersUsed.map((letter) => {
-        const { row, col } = letter.coordinates
+      history.words.map((word) => {
+        word.letters.map((letter) => {
+          const { row, col } = letter.coordinates
 
-        pattern[row][col] = {
-          id: letter.letterId,
-          point: letter.letterPoint,
-          value: letter.letterValue,
-          bonus: pattern[row][col] ? pattern[row][col] : undefined,
-        }
+          pattern[row][col] = {
+            id: letter.id,
+            point: letter.point,
+            value: letter.value,
+            bonus: pattern[row][col] ? pattern[row][col] : undefined,
+            usedInWords: pattern[row][col] && pattern[row][col].id ? [
+              ...pattern[row][col].usedInWords,
+              word.id,
+            ] : [word.id]
+          }
+        })
       })
     })
 

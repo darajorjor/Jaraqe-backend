@@ -9,5 +9,6 @@
 	"should_touch_old_tiles": "جدیدا باید با قدیما باشن",
 	"user_not_found": "کاربر پیدا نشد",
 	"friend_request_not_found": "درخواست دوستی پیدا نشد",
-	"friend_request_already_sent": "درخواست دوستی ارسال شده است"
+	"friend_request_already_sent": "درخواست دوستی ارسال شده است",
+	"word_not_found": "کلمه پیدا نشد"
 }

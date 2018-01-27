@@ -54,7 +54,6 @@ export default {
       const { user: { id } } = req
 
       const result = await gameService.listGames({ userId: id, lastKey })
-      debugger
       return res.build.success(result.map(game => transformGame(game)))
     } catch (error) {
       switch (error.message) {
@@ -66,7 +65,6 @@ export default {
 
   async getGame(req, res, next) {
     try {
-      debugger
       const { user: { id } } = req
       const { gameId } = req.params
 
@@ -96,13 +94,15 @@ export default {
       }
       //check if they form a word
       await Promise.all(words.map(async (word) => {
-        await gameService.checkWord(word.word)
+        word.word = await gameService.checkWord(word.word)
       }))
 
       //use it
-      const newGame = await gameService.play({ userId: id, game, words, letters })
-
-      debugger
+      const newGame = await gameService.play({ userId: id, game, words: words.map(w => {
+        w.id = w.word.id
+        w.word = w.word.word
+        return w
+      }), letters })
 
       return res.build.success({ game: transformGame(newGame) })
     } catch (error) {
