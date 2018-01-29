@@ -532,7 +532,7 @@ export default {
     await sendPush({
       userId: nextPlayer.userId.id,
       title: 'نوبت توئه!',
-      message: `${otherPlayer.userI} منتظرته، نوبتتو بازی کن`,
+      message: `${otherPlayer.userId.fullName || otherPlayer.userId.userName} منتظرته، نوبتتو بازی کن`,
       type: notificationTypes.GAME,
       priority: notificationPriorities.HIGH,
       destination: notificationDestinations.GAME,
@@ -584,7 +584,7 @@ export default {
     })
 
     await sendPush({
-      userId: opponent.userId._id,
+      userId: opponent.userId.toString(),
       title: `${selfUser.fullName} تسلیمت شد!`,
       message: 'ببین چی شد بازی',
       type: notificationTypes.GAME,
