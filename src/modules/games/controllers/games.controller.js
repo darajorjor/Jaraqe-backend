@@ -121,4 +121,20 @@ export default {
       }
     }
   },
+
+  async surrenderGame(req, res, next) {
+    try {
+      const { gameId } = req.params
+      const { user: { id } } = req
+
+      const surrenderedGame = await gameService.surrender({ userId: id, gameId })
+
+      res.build.success({ game: transformGame(surrenderedGame )})
+    } catch (error) {
+      switch (error.message) {
+        default:
+          return next(error);
+      }
+    }
+  }
 }

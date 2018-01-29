@@ -3,6 +3,7 @@ import mongoose from 'src/dao/connections/mongo'
 import statuses from 'src/constants/enums/status.enum'
 import genderTypes from 'src/constants/enums/genderTypes.enum'
 import friendRequestTypes from 'src/constants/enums/friendRequestTypes.enum'
+import coinTransactionTypes from 'src/constants/enums/coinTransactions.enum'
 import messages from 'src/constants/defaults/messages.default'
 
 const FriendRequest = new mongoose.Schema({
@@ -69,6 +70,26 @@ const UserSchema = new mongoose.Schema({
     type: [FriendRequest],
     default: [],
   },
+  coinTransactions: [{
+    _id: false,
+    type: {
+      type: String,
+      enum: Object.values(coinTransactionTypes),
+      allowNull: false,
+    },
+    amount: {
+      type: Number,
+      allowNull: false,
+    },
+    recordId: {
+      type: String,
+      allowNull: false,
+    },
+    date: {
+      type: Date,
+      default: new Date,
+    }
+  }],
 }, { timestamps: true });
 
 UserSchema.methods = {
@@ -81,6 +102,20 @@ UserSchema.methods = {
     if (status === statuses.FRIEND_REQUEST.ACCEPTED) {
       this.friends.push(this.friendRequests[targetUserFriendRequestIndex].user)
     }
+
+    return this.save()
+  },
+
+  getCoins() {
+    return this.coinTransactions.reduce((total, item) => ({ coins: total.coins + item.amount }), { coins: 0 }).coins
+  },
+
+  addTransaction({ type, amount, recordId }) {
+    this.coinTransactions.push({
+      type,
+      amount,
+      recordId,
+    })
 
     return this.save()
   },

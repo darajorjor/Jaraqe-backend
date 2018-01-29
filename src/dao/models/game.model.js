@@ -1,10 +1,17 @@
 import mongoose from 'connections/mongo'
 import boardEnums from 'src/constants/enums/board.enum'
+import statuses from 'src/constants/enums/status.enum'
 import uuid from 'uuid/v4'
 import Board from './board.model'
 import shuffleArray from '../../utils/helpers/shuffleArray'
+import config from 'src/config/app.config'
 
 const GameSchema = new mongoose.Schema({
+  coinPrize: {
+    type: Number,
+    allowNull: false,
+    default: config.values.gameDefaultCoinPrize,
+  },
   players: {
     type: [{
       userId: {
@@ -30,6 +37,14 @@ const GameSchema = new mongoose.Schema({
       }],
     }],
     default: [],
+  },
+  winner: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'User',
+  },
+  turnTime: {
+    type: Number, // in minutes
+    default: config.values.gameDefaultTurnTime,
   },
   board: {
     type: mongoose.Schema.ObjectId,
@@ -102,6 +117,11 @@ const GameSchema = new mongoose.Schema({
       default: false,
     }
   }],
+  status: {
+    type: String,
+    enum: Object.values(statuses.GAME),
+    default: statuses.GAME.ACTIVE,
+  }
 }, { timestamps: true })
 
 GameSchema.methods = {
