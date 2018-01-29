@@ -11,6 +11,7 @@ const userProfileRules = {
 }
 const selfProfileRules = {
   ...miniUserRules,
+  coins: 'coins',
   friends: (obj) => obj.friends.map(r => transformUserProfile(r)),
   friendRequests: (obj) => obj.friendRequests.map((fr) => {
     fr.user = transformUserProfile(fr.user)

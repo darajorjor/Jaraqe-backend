@@ -39,4 +39,8 @@ export default {
     host: process.env.REDIS_HOST,
     password: process.env.REDIS_PASSWORD,
   },
+  values: {
+    gameDefaultCoinPrize: 15,
+    gameDefaultTurnTime: 60 * 48, // two days
+  }
 }

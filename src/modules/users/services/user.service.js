@@ -25,8 +25,10 @@ export default {
       .populate('friendRequests.user')
 
     if (!user) throw new Error(messages.USER_NOT_FOUND)
+    const coins = user.getCoins()
     user = user.toObject()
 
+    user.coins = coins
     user.friendRequests = user.friendRequests.filter((fr) => fr.requestType === friendRequestTypes.RECEIVED && fr.status === 'PENDING')
     user.friends = user.friends.map(fr => {
       fr.isFriend = true

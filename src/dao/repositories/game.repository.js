@@ -1,7 +1,11 @@
 import { Game } from '../models'
 import mongoose from 'mongoose'
+import statuses from 'src/constants/enums/status.enum'
 
 export default {
+  findById(id) {
+    return Game.findById(id)
+  },
   findOne(data) {
     return Game.findOne(data)
   },
@@ -27,7 +31,11 @@ export default {
   },
 
   async list({ userId, lastKey }) {
-    const where = { 'players.userId': mongoose.Types.ObjectId(userId) }
+    const where = {
+      'players.userId': mongoose.Types.ObjectId(userId),
+      status: { $ne: statuses.GAME.FINISHED }
+    }
+
     if (lastKey) {
       const lastGame = await Game.findById(lastKey)
       where.$or = [

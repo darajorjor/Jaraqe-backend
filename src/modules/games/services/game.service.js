@@ -12,6 +12,8 @@ import sendPush from 'src/utils/push'
 import notificationTypes from 'src/constants/enums/notificationTypes.enum'
 import notificationPriorities from 'src/constants/enums/notificationPriorities.enum'
 import notificationDestinations from 'src/constants/enums/notificationDestinations.enum'
+import statuses from 'src/constants/enums/status.enum'
+import coinTransactionTypes from 'src/constants/enums/coinTransactions.enum'
 
 String.prototype.splice = function (idx, rem, str) {
   return this.slice(0, idx) + str + this.slice(idx + Math.abs(rem))
@@ -22,6 +24,21 @@ function sortHorizontally(a, b) {
 }
 function sortVertically(a, b) {
   return a.coordinates.row - b.coordinates.row
+}
+function calcGameScore(game) {
+  game.players = game.players.map((player) => {
+    let score = 0
+    game.history.forEach((history) => {
+      if (player.userId._id.toString() === history.player.toString()) {
+        score += history.totalScore
+      }
+    })
+
+    player.score = score
+    return player
+  })
+
+  return game
 }
 
 export default {
@@ -528,20 +545,10 @@ export default {
     const pattern = await game.fillBoard()
     game = game.toObject()
     game.board.pattern = pattern
-    game.players = game.players.map((player) => {
-      let score = 0
-      game.history.forEach((history) => {
-        if (player.userId._id.toString() === history.player.toString()) {
-          score += history.totalScore
-        }
-      })
 
-      player.score = score
-      return player
-    })
-
-    return game
+    return calcGameScore(game)
   },
+
   controlRacks(userId, game) {
     game.players = game.players.map((player) => {
       if (player.userId._id) {
@@ -559,4 +566,32 @@ export default {
 
     return game
   },
+
+  async surrender({ userId, gameId }) {
+    let game = await GameRepo.findById(gameId)
+
+    const opponent = game.players.find(p => p.userId.toString() !== userId)
+    game.winner = opponent.userId
+    game.status = statuses.GAME.FINISHED
+
+    let user = await UserRepo.findById(opponent.userId)
+    let selfUser = await UserRepo.findById(userId)
+
+    await user.addTransaction({
+      amount: game.coinPrize,
+      recordId: gameId,
+      type: coinTransactionTypes.GAME,
+    })
+
+    await sendPush({
+      userId: opponent.userId._id,
+      title: `${selfUser.fullName} تسلیمت شد!`,
+      message: 'ببین چی شد بازی',
+      type: notificationTypes.GAME,
+      priority: notificationPriorities.HIGH,
+      destination: notificationDestinations.GAME,
+    })
+
+    return game.save()
+  }
 }

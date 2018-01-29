@@ -16,4 +16,8 @@ export default {
     ACCEPTED: 'ACCEPTED',
     DECLINED: 'DECLINED',
   },
+  GAME: {
+    ACTIVE: 'ACTIVE',
+    FINISHED: 'FINISHED',
+  },
 }
