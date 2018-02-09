@@ -137,5 +137,25 @@ export default {
     }
 
     return UserRepository.findOneAndUpdate({ _id: user._id }, data)
+  },
+
+  async registerGoogleUser(gData) {
+    let user = await UserRepository.findByGoogleId(gData.id)
+    // data.username = username
+    let data = {}
+    data.fullName = gData.displayName
+    data.firstName = gData.name.givenName
+    data.lastName = gData.name.familyName
+    data.avatar = gData.image.url
+    data.oauth = {
+      google: gData
+    }
+
+    if (!user) {
+      return UserRepository.registerUser(data)
+    }
+
+    return UserRepository.findOneAndUpdate({ _id: user._id }, data)
   }
+
 }

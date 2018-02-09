@@ -42,5 +42,9 @@ export default {
   values: {
     gameDefaultCoinPrize: 15,
     gameDefaultTurnTime: 60 * 48, // two days
-  }
+  },
+  google: {
+    clientId: '922756825347-kjnil5k779psao4anenaloiipdeljvi5.apps.googleusercontent.com',
+    clientSecret: 'z1CnbGpP9XcnD2uaf7HQ3TUa',
+  },
 }

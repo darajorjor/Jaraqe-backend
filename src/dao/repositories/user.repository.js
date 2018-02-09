@@ -64,6 +64,19 @@ export default {
     return dbUser
   },
 
+  async findByGoogleId(id) {
+    const dbUser = await User.findOne({
+      'oauth.google.id': id,
+      status: { $ne: status.USER.INACTIVE },
+    })
+
+    if (!dbUser) {
+      return null
+    }
+
+    return dbUser
+  },
+
   async registerUser(data) {
     data.session = uuid()
     const newUser = new User(data)

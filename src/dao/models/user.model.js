@@ -121,16 +121,16 @@ UserSchema.methods = {
   },
 }
 
-UserSchema.pre('save', function (next) {
-  if (!this.fullName && this.oauth.instagram.fullName) {
-    this.fullName = this.oauth.instagram.fullName
-  }
-  if (!this.username && this.oauth.instagram.username) {
-    this.username = this.oauth.instagram.username
-  }
-
-  next()
-})
+// UserSchema.pre('save', function (next) {
+//   if (!this.fullName && this.oauth.instagram.fullName) {
+//     this.fullName = this.oauth.instagram.fullName
+//   }
+//   if (!this.username && this.oauth.instagram.username) {
+//     this.username = this.oauth.instagram.username
+//   }
+//
+//   next()
+// })
 
 const User = mongoose.model('User', UserSchema)
 
