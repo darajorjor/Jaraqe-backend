@@ -75,7 +75,7 @@ module.exports = {
   async loginGoogleController(req, res, next) {
     try {
       const { code } = req.query
-      const fullUrl = (`${req.protocol}://${req.get('host')}.nip.io${req.originalUrl}`).split('?')[0]
+      const fullUrl = (`${req.protocol}://${req.get('host')}${req.originalUrl}`).split('?')[0]
 
       if (code) {
         const response = await AuthService.requestGoogleAccessToken(code, fullUrl)
