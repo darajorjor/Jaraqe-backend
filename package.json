@@ -54,7 +54,9 @@
     "ioredis": "^3.2.2",
     "joi": "11.4.0",
     "kue": "^0.11.6",
+    "later": "^1.2.0",
     "method-override": "2.3.10",
+    "moment-jalaali": "^0.7.2",
     "mongoose": "^5.0.0",
     "node-opensignal-api": "^0.0.3",
     "persian": "~1.0.0",
@@ -67,7 +69,8 @@
     "sequelize-cli": "3.0.0",
     "sqlite3": "^3.1.13",
     "transformobject": "0.1.1",
-    "uuid": "3.1.0"
+    "uuid": "3.1.0",
+    "zarinpal-checkout": "^0.2.7"
   },
   "devDependencies": {
     "babel-cli": "6.26.0",

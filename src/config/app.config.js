@@ -44,7 +44,13 @@ export default {
     gameDefaultTurnTime: 60 * 48, // two days
   },
   google: {
-    clientId: '922756825347-kjnil5k779psao4anenaloiipdeljvi5.apps.googleusercontent.com',
-    clientSecret: 'z1CnbGpP9XcnD2uaf7HQ3TUa',
+    clientId: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   },
+  zarinpalApiKey: process.env.ZARINPAL_API_KEY,
+
+  timeIntervals: {
+    sessionEx: 300,
+  },
+  lastOnlineOffset: 10, // minutes
 }

@@ -1,9 +1,20 @@
-import { transform } from 'transformobject';
+import { transform } from 'transformobject'
+import moment from 'moment-jalaali'
+import config from 'src/config/app.config'
 
 const miniUserRules = {
   id: '_id',
   fullName: 'fullName',
   avatar: 'avatar',
+  isOnline: (obj) => {
+    if (obj.lastOnline) {
+      const tenMinutesAgo = moment().subtract(config.lastOnlineOffset, 'minutes')
+
+      return moment(obj.lastOnline).isAfter(tenMinutesAgo)
+    }
+
+    return false
+  }
 };
 const userProfileRules = {
   ...miniUserRules,
@@ -12,6 +23,7 @@ const userProfileRules = {
 const selfProfileRules = {
   ...miniUserRules,
   coins: 'coins',
+  powerUps: 'powerUps',
   friends: (obj) => obj.friends.map(r => transformUserProfile(r)),
   friendRequests: (obj) => obj.friendRequests.map((fr) => {
     fr.user = transformUserProfile(fr.user)

@@ -10,5 +10,8 @@
 	"user_not_found": "کاربر پیدا نشد",
 	"friend_request_not_found": "درخواست دوستی پیدا نشد",
 	"friend_request_already_sent": "درخواست دوستی ارسال شده است",
-	"word_not_found": "کلمه پیدا نشد"
+	"word_not_found": "کلمه پیدا نشد",
+	"swapplus_not_available": "کلمه پیدا نشد",
+	"item_not_found": "آیتم مورد نظر پیدا نشد",
+	"not_enough_balance": "اعتبار شما کافی نیست"
 }

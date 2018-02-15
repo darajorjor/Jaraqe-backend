@@ -14,6 +14,7 @@ import config from 'src/config/app.config'
 
 import errorHandler from 'src/utils/helpers/errorHandler'
 import modulesList from 'src/modules'
+import initWorkers from './workers'
 
 global.Promise = Promise
 
@@ -63,3 +64,5 @@ app.use(errorHandler)
 server.listen(config.port, '0.0.0.0', () => {
   console.info(chalk.inverse(`Jaraqe-Backend-Core listeting on port: ${config.port}`))
 })
+
+initWorkers()

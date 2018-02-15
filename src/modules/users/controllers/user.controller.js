@@ -36,6 +36,27 @@ export default {
       }
     }
   },
+  async updateUser(req, res, next) {
+    try {
+      const { id } = req.user
+      const {
+        gender,
+      } = req.body
+
+      const user = await userService.update(id, {
+        gender,
+      })
+
+      return res.build.success(transformUserProfile(user))
+    } catch (error) {
+      switch (error.message) {
+        case messages.USER_NOT_FOUND:
+          return res.build.notFound(messages.USER_NOT_FOUND)
+        default:
+          return next(error);
+      }
+    }
+  },
   async changeUserFriendship(req, res, next) {
     try {
       const { userId } = req.params

@@ -3,6 +3,7 @@ import Device from './device.model'
 import Word from './word.model'
 import Game from './game.model'
 import Board from './board.model'
+import Setting from './setting.model'
 
 export {
   User,
@@ -10,4 +11,5 @@ export {
   Word,
   Game,
   Board,
+  Setting,
 }

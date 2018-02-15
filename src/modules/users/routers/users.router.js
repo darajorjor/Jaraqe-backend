@@ -10,6 +10,12 @@ router.get('/self',
   userCtrl.getSelfProfile
 )
 
+router.put('/self',
+  userMiddleware,
+  //validation,
+  userCtrl.updateUser
+)
+
 router.get('/search',
   userMiddleware,
   //validation,

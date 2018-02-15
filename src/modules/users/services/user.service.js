@@ -39,6 +39,25 @@ export default {
     return user
   },
 
+  async update(id, data) {
+    let user = await UserRepository.findOneAndUpdate(id, data)
+    //   .populate('friends')
+    //   .populate('friendRequests.user')
+    //
+    // const coins = user.getCoins()
+    // user = user.toObject()
+    //
+    // user.coins = coins
+    // user.friendRequests = user.friendRequests.filter((fr) => fr.requestType === friendRequestTypes.RECEIVED && fr.status === 'PENDING')
+    // user.friends = user.friends.map(fr => {
+    //   fr.isFriend = true
+    //
+    //   return fr
+    // })
+
+    return user
+  },
+
   async addFriend(userId, targetUserId) {
     const user = await UserRepository.findById(userId)
     if (!user) throw new Error(messages.USER_NOT_FOUND)

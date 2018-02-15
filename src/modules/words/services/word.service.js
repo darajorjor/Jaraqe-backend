@@ -1,6 +1,7 @@
 import WordRepo from 'repositories/word.repository'
 import messages from 'src/constants/defaults/messages.default'
 import Wikipedia from 'src/utils/wikipedia'
+import shuffleArray from 'src/utils/helpers/shuffleArray'
 
 export default {
   async getWordsInfo(wordIds) {
@@ -23,4 +24,12 @@ export default {
 
     return result
   },
+
+  controlLetters(letters, rack) {
+    const shuffled = shuffleArray(letters.filter(l => !l.isUsed)).splice(0, (7 - rack.length))
+    return [
+      ...rack,
+      ...shuffled
+    ]
+  }
 }

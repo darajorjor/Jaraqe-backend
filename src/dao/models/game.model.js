@@ -5,6 +5,7 @@ import uuid from 'uuid/v4'
 import Board from './board.model'
 import shuffleArray from '../../utils/helpers/shuffleArray'
 import config from 'src/config/app.config'
+import wordService from 'src/modules/words/services/word.service'
 
 const GameSchema = new mongoose.Schema({
   coinPrize: {
@@ -203,7 +204,7 @@ GameSchema.methods = {
       if (player.userId.toString() === userId) {
         player.shouldPlayNext = false
         player.rack = player.rack.filter(l => !letters.map(i => i.id).includes(l.id))
-        player.rack.push(...shuffleArray(this.letters.filter(l => !l.isUsed)).splice(0, (7 - player.rack.length)))
+        player.rack = wordService.controlLetters(this.letters, player.rack)
       }
 
       return player

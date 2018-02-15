@@ -3,4 +3,5 @@ export default [
   'devices',
   'games',
   'words',
+  'store',
 ]

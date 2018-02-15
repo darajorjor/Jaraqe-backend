@@ -28,6 +28,13 @@ router.post('/:gameId/play',
   gamesController.playGame,
 )
 
+router.post('/:gameId/swap',
+  // deviceMiddleware,
+  userMiddleware,
+  // validate(rules.registerDevice),
+  gamesController.swap,
+)
+
 router.post('/:gameId/surrender',
   // deviceMiddleware,
   userMiddleware,

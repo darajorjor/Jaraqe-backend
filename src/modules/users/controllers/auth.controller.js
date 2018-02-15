@@ -75,8 +75,7 @@ module.exports = {
   async loginGoogleController(req, res, next) {
     try {
       const { code } = req.query
-      const fullUrl = (req.protocol + '://' + req.get('host') + req.originalUrl).split('?')[0]
-
+      const fullUrl = (`${req.protocol}://${req.get('host')}.nip.io${req.originalUrl}`).split('?')[0]
 
       if (code) {
         const response = await AuthService.requestGoogleAccessToken(code, fullUrl)
@@ -84,21 +83,11 @@ module.exports = {
         if (response.status < 400) { // ok
           const savedUser = await UserService.registerGoogleUser(response.data)
 
-          debugger
           return res.redirect(`jaraqe://login?user=${JSON.stringify({
               user: transformSelfProfile(savedUser),
               session: savedUser.session,
             }
           )}`)
-/*
-          return res.send(Handlebars.compile(returnToApp.toString())({
-            data: JSON.stringify({
-                user: transformSelfProfile(savedUser),
-                session: savedUser.session,
-              }
-            )
-          }))
-*/
         } else {
           return res.status(response.status).send(response.statusText)
         }

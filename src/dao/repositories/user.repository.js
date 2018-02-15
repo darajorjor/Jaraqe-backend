@@ -2,6 +2,8 @@ import { User } from '../models'
 import status from 'src/constants/enums/status.enum'
 import uuid from 'uuid/v4'
 import mongoose from 'mongoose'
+import redis from 'src/dao/connections/redis'
+import config from 'src/config/app.config'
 
 export default {
   findById(data) {
@@ -45,10 +47,26 @@ export default {
   },
 
   async findBySession(session) {
-    return User.findOne({
-      session,
-      status: status.USER.ACTIVE,
-    }).exec();
+    const key = `user:session:${session}`;
+    let user = JSON.parse(await redis.get(key));
+    if (user) {
+      redis.expire(key, config.timeIntervals.sessionEx);
+    } else {
+      const dbUser = await User.findOne({
+        session,
+        status: status.USER.ACTIVE,
+      }).exec()
+
+      if (!dbUser) return null
+
+      user = {
+        id: dbUser._id.toString(),
+        status: dbUser.status,
+      }
+      redis.setex(key, config.timeIntervals.sessionEx, JSON.stringify(user));
+    }
+
+    return user
   },
 
   async findByInstagramId(id) {
@@ -80,6 +98,22 @@ export default {
   async registerUser(data) {
     data.session = uuid()
     const newUser = new User(data)
+
+    const key = `user:session:${newUser.session}`;
+    redis.setex(key, config.timeIntervals.sessionEx, JSON.stringify(newUser));
+
     return newUser.save()
+  },
+
+  async getRedisSessions() {
+    return redis.keys('user:session:*');
+  },
+
+  async setLastOnlineBySession({ session, lastOnline }) {
+    return User.update({
+      session,
+    }, {
+      lastOnline,
+    });
   },
 }

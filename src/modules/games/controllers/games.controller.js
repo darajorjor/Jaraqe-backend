@@ -28,6 +28,7 @@ export default {
       }
     }
   },
+
   async playWithUser(req, res, next) {
     try {
       const { user: { id } } = req
@@ -136,5 +137,26 @@ export default {
           return next(error);
       }
     }
-  }
+  },
+
+  async swap(req, res, next) {
+    try {
+      const { letters, isPlus } = req.body
+      const { gameId } = req.params
+      const { user: { id } } = req
+
+      const rack = await gameService.swapLetters({ gameId, userId: id, letters, isPlus })
+
+      return res.build.success({ rack })
+    } catch (error) {
+      switch (error.message) {
+        case messages.NOT_YOUR_TURN:
+          return res.build.forbidden(messages.NOT_YOUR_TURN)
+        case messages.SWAPPLUS_NOT_AVAILABLE:
+          return res.build.forbidden(messages.SWAPPLUS_NOT_AVAILABLE)
+        default:
+          return next(error);
+      }
+    }
+  },
 }

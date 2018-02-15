@@ -14,6 +14,7 @@ import notificationPriorities from 'src/constants/enums/notificationPriorities.e
 import notificationDestinations from 'src/constants/enums/notificationDestinations.enum'
 import statuses from 'src/constants/enums/status.enum'
 import coinTransactionTypes from 'src/constants/enums/coinTransactions.enum'
+import wordService from 'src/modules/words/services/word.service'
 
 String.prototype.splice = function (idx, rem, str) {
   return this.slice(0, idx) + str + this.slice(idx + Math.abs(rem))
@@ -593,5 +594,47 @@ export default {
     })
 
     return game.save()
-  }
+  },
+
+  async swapLetters({ gameId, userId, letters, isPlus }) {
+    const game = await GameRepo.findOne({ _id: gameId })
+
+    // is it his turn?
+    if (!game.players.find(p => p.userId.toString() === userId).shouldPlayNext) {
+      throw new Error(messages.NOT_YOUR_TURN)
+    }
+
+    // can he use isPlus?
+    if (isPlus) {
+      const user = await UserRepo.findById(userId)
+      if (user.powerUps.swapPlus > 0) {
+        user.powerUps.swapPlus--
+      } else {
+        throw new Error(messages.SWAPPLUS_NOT_AVAILABLE)
+      }
+
+      await user.save()
+    }
+
+    const shouldPlayNext = game.players.filter(p => p.userId.toString() !== userId)[0].userId
+    let thePlayer
+    game.players = game.players.map((player) => {
+      if (player.userId.toString() === userId) { // update rack
+        player.rack = player.rack.filter(l => !letters.map(i => i).includes(l.id))
+        player.rack = wordService.controlLetters(game.letters, player.rack)
+        thePlayer = player
+      }
+
+      if (!isPlus) {
+        // change turn
+        player.shouldPlayNext = player.userId.toString() === shouldPlayNext.toString();
+      }
+
+      return player
+    })
+
+    await game.save()
+
+    return thePlayer.rack
+  },
 }

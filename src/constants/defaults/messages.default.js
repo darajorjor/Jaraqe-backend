@@ -34,4 +34,7 @@ export default {
   NOT_YOUR_TURN: 'not_your_turn',
   SHOULD_TOUCH_OLD_TILES: 'should_touch_old_tiles',
   WORD_NOT_FOUND: 'word_not_found',
+  SWAPPLUS_NOT_AVAILABLE: 'swapplus_not_available',
+  ITEM_NOT_FOUND: 'item_not_found',
+  NOT_ENOUGH_BALANCE: 'not_enough_balance',
 }

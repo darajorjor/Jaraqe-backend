@@ -3,7 +3,12 @@ import status from 'src/constants/enums/status.enum'
 
 export default async (request, response, next) => {
   try {
-    const { session } = request.headers
+    let { session } = request.headers
+
+    if (request.query.session) {
+      session = request.query.session
+    }
+
     if (!session) {
       if (request.user) {
         return next()
@@ -21,7 +26,7 @@ export default async (request, response, next) => {
       return response.build.unauthorized(response.messages.FORBIDDEN_USER)
     }
     request.user = {
-      id: user._id.toString(),
+      id: user.id,
       status: user.status,
       isGuest: false,
     }

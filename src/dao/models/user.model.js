@@ -34,7 +34,7 @@ const UserSchema = new mongoose.Schema({
   lastName: String,
   fullName: String,
   gender: {
-    type: Boolean,
+    type: String,
     enum: Object.values(genderTypes)
   },
   avatar: String,
@@ -90,6 +90,13 @@ const UserSchema = new mongoose.Schema({
       default: new Date,
     }
   }],
+  powerUps: {
+    swapPlus: {
+      type: Number,
+      default: 0,
+      allowNull: false,
+    }
+  },
 }, { timestamps: true });
 
 UserSchema.methods = {
@@ -107,10 +114,11 @@ UserSchema.methods = {
   },
 
   getCoins() {
-    return this.coinTransactions.reduce((total, item) => ({ coins: total.coins + item.amount }), { coins: 0 }).coins
+    return this.coinTransactions.reduce((total, item) => ((total ? total : 0) + item.amount), 0)
   },
 
-  addTransaction({ type, amount, recordId }) {
+  async addTransaction({ type, amount, recordId }) {
+    console.log('this.coinTransactions', this.coinTransactions)
     this.coinTransactions.push({
       type,
       amount,
