@@ -26,6 +26,7 @@ const selfProfileRules = {
   coins: 'coins',
   powerUps: 'powerUps',
   friends: (obj) => obj.friends.map(r => transformUserProfile(r)),
+  isRegistered: 'isRegistered',
   friendRequests: (obj) => obj.friendRequests.map((fr) => {
     fr.user = transformUserProfile(fr.user)
     return fr

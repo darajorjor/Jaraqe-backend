@@ -13,5 +13,7 @@
 	"word_not_found": "کلمه پیدا نشد",
 	"swapplus_not_available": "کلمه پیدا نشد",
 	"item_not_found": "آیتم مورد نظر پیدا نشد",
-	"not_enough_balance": "اعتبار شما کافی نیست"
+	"not_enough_balance": "اعتبار شما کافی نیست",
+	"YOU_CANNOT_INVITE_YOURSELF": "نمیتوانید خودتان را دعوت کنید",
+	"USER_ALREADY_BEFRIENDED": "این کاربر در حال حاضر دوست شماست"
 }

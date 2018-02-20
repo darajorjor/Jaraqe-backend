@@ -37,4 +37,6 @@ export default {
   SWAPPLUS_NOT_AVAILABLE: 'swapplus_not_available',
   ITEM_NOT_FOUND: 'item_not_found',
   NOT_ENOUGH_BALANCE: 'not_enough_balance',
+  YOU_CANNOT_INVITE_YOURSELF: 'YOU_CANNOT_INVITE_YOURSELF',
+  USER_ALREADY_BEFRIENDED: 'USER_ALREADY_BEFRIENDED',
 }

@@ -41,10 +41,12 @@ export default {
       const { id } = req.user
       const {
         gender,
+        referrer,
       } = req.body
 
       const user = await userService.update(id, {
         gender,
+        referrer,
       })
 
       return res.build.success(transformUserProfile(user))
@@ -52,6 +54,8 @@ export default {
       switch (error.message) {
         case messages.USER_NOT_FOUND:
           return res.build.notFound(messages.USER_NOT_FOUND)
+        case messages.NO_SUCH_USER:
+          return res.build.notFound(messages.NO_SUCH_USER)
         default:
           return next(error);
       }

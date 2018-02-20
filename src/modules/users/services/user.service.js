@@ -2,7 +2,9 @@ import UserRepository from 'repositories/user.repository'
 import messages from 'src/constants/defaults/messages.default'
 import friendRequestTypes from 'src/constants/enums/friendRequestTypes.enum'
 import status from 'src/constants/enums/status.enum'
+import coinTransactionTypes from 'src/constants/enums/coinTransactions.enum'
 import uuid from 'uuid/v4'
+import config from 'src/config/app.config'
 
 export default {
   async getUser(id, selfId) {
@@ -40,6 +42,11 @@ export default {
   },
 
   async update(id, data) {
+    if (data.referrer) {
+      // check referrer
+      await this.applyReferrer(data.referrer, id)
+    }
+
     let user = await UserRepository.findOneAndUpdate(id, data)
     //   .populate('friends')
     //   .populate('friendRequests.user')
@@ -155,14 +162,22 @@ export default {
       return UserRepository.registerUser(data)
     }
 
-    return UserRepository.findOneAndUpdate({ _id: user._id }, data)
+    const updatedUser = await UserRepository.findOneAndUpdate({ _id: user._id }, data)
+
+    return {
+      ...updatedUser.toObject(),
+      isRegistered: true,
+    }
   },
 
   async registerGoogleUser(gData) {
     let user = await UserRepository.findByGoogleId(gData.id)
-    // data.username = username
+
     let data = {}
     data.fullName = gData.displayName
+    if (!user) {
+      data.username = await this.generateUsername(gData.name.givenName, gData.name.familyName)
+    }
     data.firstName = gData.name.givenName
     data.lastName = gData.name.familyName
     data.avatar = gData.image.url
@@ -174,7 +189,47 @@ export default {
       return UserRepository.registerUser(data)
     }
 
-    return UserRepository.findOneAndUpdate({ _id: user._id }, data)
-  }
+    const updatedUser = await UserRepository.findOneAndUpdate({ _id: user._id }, data)
 
+    return {
+      ...updatedUser.toObject(),
+      isRegistered: true,
+    }
+  },
+
+  async generateUsername(firstName, lastName) {
+    let username = `${firstName}${lastName ? lastName.split(' ')[0] : ''}${Math.floor((Math.random() * 9999) + 1)}`
+    let userWithSameUsername = await UserRepository.findOne({ username })
+
+    while(userWithSameUsername) {
+      username = `${firstName}${lastName ? lastName.split(' ')[0] : ''}${Math.floor((Math.random() * 9999) + 1)}`
+      userWithSameUsername = await UserRepository.findOne({ username })
+    }
+
+    return username
+  },
+
+  async applyReferrer(referrerUsername, referredUserId) {
+    const user = await UserRepository.findById(referredUserId)
+    if (user.username === referrerUsername) {
+      throw new Error(messages.YOU_CANNOT_INVITE_YOURSELF)
+    }
+
+    const referrer = await UserRepository.findOne({ username: new RegExp(referrerUsername, 'i') })
+
+    if (!referrer) throw new Error(messages.NO_SUCH_USER)
+
+    await referrer.addTransaction({
+      type: coinTransactionTypes.REFERRAL,
+      amount: config.prices.referrerGift,
+      recordId: referredUserId,
+    })
+    await user.addTransaction({
+      type: coinTransactionTypes.REFERRAL,
+      amount: config.prices.referredUserGift,
+      recordId: referrer._id,
+    })
+
+    return true
+  },
 }

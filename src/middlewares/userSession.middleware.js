@@ -8,7 +8,6 @@ export default async (request, response, next) => {
     if (request.query.session) {
       session = request.query.session
     }
-
     if (!session) {
       if (request.user) {
         return next()
@@ -26,7 +25,7 @@ export default async (request, response, next) => {
       return response.build.unauthorized(response.messages.FORBIDDEN_USER)
     }
     request.user = {
-      id: user.id,
+      id: user.id || user._id,
       status: user.status,
       isGuest: false,
     }

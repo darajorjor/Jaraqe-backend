@@ -53,4 +53,8 @@ export default {
     sessionEx: 300,
   },
   lastOnlineOffset: 10, // minutes
+  prices: {
+    referrerGift: 40,
+    referredUserGift: 40,
+  },
 }

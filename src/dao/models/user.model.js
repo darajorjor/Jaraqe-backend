@@ -57,6 +57,7 @@ const UserSchema = new mongoose.Schema({
   lastOnline: Date,
   oauth: {
     instagram: {},
+    google: {},
   },
   friends: {
     type: [{
@@ -107,6 +108,9 @@ UserSchema.methods = {
     this.friendRequests[targetUserFriendRequestIndex].status = status
 
     if (status === statuses.FRIEND_REQUEST.ACCEPTED) {
+      if (this.friends.find(i => i.toString() === this.friendRequests[targetUserFriendRequestIndex].user.toString())) {
+        throw new Error(messages.USER_ALREADY_BEFRIENDED)
+      }
       this.friends.push(this.friendRequests[targetUserFriendRequestIndex].user)
     }
 
@@ -118,7 +122,6 @@ UserSchema.methods = {
   },
 
   async addTransaction({ type, amount, recordId }) {
-    console.log('this.coinTransactions', this.coinTransactions)
     this.coinTransactions.push({
       type,
       amount,
