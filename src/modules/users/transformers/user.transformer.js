@@ -6,6 +6,7 @@ const miniUserRules = {
   id: '_id',
   fullName: 'fullName',
   avatar: 'avatar',
+  username: 'username',
   isOnline: (obj) => {
     if (obj.lastOnline) {
       const tenMinutesAgo = moment().subtract(config.lastOnlineOffset, 'minutes')

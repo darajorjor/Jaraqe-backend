@@ -2,7 +2,6 @@ import UserRepository from 'repositories/user.repository';
 
 export default {
   async run() {
-    console.error('running worker');
     const userSessions = await UserRepository.getRedisSessions();
     const sessions = userSessions.map((userSession) => {
       return userSession.substr(13);
