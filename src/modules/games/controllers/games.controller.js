@@ -1,9 +1,31 @@
 // import DeviceRepository from 'repositories/device.repository'
+import GameRepo from 'repositories/game.repository'
 import transformGame from '../transformers/game.transformer'
 import gameService from '../services/game.service'
 import messages from 'src/constants/defaults/messages.default'
+import statuses from 'src/constants/enums/status.enum'
 
 export default {
+  async gameIdParam(req, res, next, id) {
+    // do validation on name here
+    // blah blah validation
+    // log something so we know its working
+    console.log('doing name validations on ' + id);
+    let game = await GameRepo.findById(id)
+    if (game.status === statuses.GAME.INACTIVE) {
+      return res.build.forbidden(messages.GAME_INACTIVE)
+    }
+
+    if (!game) {
+      return res.build.notFound(messages.GAME_NOT_FOUND)
+    }
+
+    // once validation is done save the new item in the req
+    req.game = game;
+    // go to the next thing
+    next();
+  },
+
   async smartMatch(req, res, next) {
     try {
       const { user: { id } } = req
@@ -67,9 +89,9 @@ export default {
   async getGame(req, res, next) {
     try {
       const { user: { id } } = req
-      const { gameId } = req.params
+      const { gameIdAlt } = req.params
 
-      const game = await gameService.getGame({ userId: id, gameId })
+      const game = await gameService.getGame({ userId: id, gameId: gameIdAlt })
 
       return res.build.success(transformGame(game))
     } catch (error) {
@@ -82,13 +104,17 @@ export default {
 
   async playGame(req, res, next) {
     try {
-      const { gameId } = req.params
       const { letters: rawLetters } = req.body
-      const { user: { id } } = req
+      const { user: { id }, game } = req
+
+      if (game.status === statuses.GAME.FINISHED) {
+        return res.build.forbidden(messages.GAME_FINISHED)
+      }
 
       //validate letters and letters on board
       //check bonuses
-      const { letters, game, words } = await gameService.validateLetters({ userId: id, gameId, letters: rawLetters })
+      debugger
+      const { letters, game: playedGame, words } = await gameService.validateLetters({ userId: id, game, letters: rawLetters })
 
       if (words.length === 0) {
         return res.build.notFound(messages.WORD_NOT_IN_DICTIONARY)
@@ -99,7 +125,7 @@ export default {
       }))
 
       //use it
-      const newGame = await gameService.play({ userId: id, game, words: words.map(w => {
+      const newGame = await gameService.play({ userId: id, game: playedGame, words: words.map(w => {
         w.id = w.word.id
         w.word = w.word.word
         return w
@@ -125,10 +151,13 @@ export default {
 
   async surrenderGame(req, res, next) {
     try {
-      const { gameId } = req.params
-      const { user: { id } } = req
+      const { user: { id }, game } = req
 
-      const surrenderedGame = await gameService.surrender({ userId: id, gameId })
+      if (game.status === statuses.GAME.FINISHED) {
+        return res.build.forbidden(messages.GAME_FINISHED)
+      }
+
+      const surrenderedGame = await gameService.surrender({ userId: id, game })
 
       res.build.success({ game: transformGame(surrenderedGame )})
     } catch (error) {
@@ -142,10 +171,13 @@ export default {
   async swap(req, res, next) {
     try {
       const { letters, isPlus } = req.body
-      const { gameId } = req.params
-      const { user: { id } } = req
+      const { user: { id }, game } = req
 
-      const rack = await gameService.swapLetters({ gameId, userId: id, letters, isPlus })
+      if (game.status === statuses.GAME.FINISHED) {
+        return res.build.forbidden(messages.GAME_FINISHED)
+      }
+
+      const rack = await gameService.swapLetters({ game, userId: id, letters, isPlus })
 
       return res.build.success({ rack })
     } catch (error) {

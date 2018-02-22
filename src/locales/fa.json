@@ -11,9 +11,13 @@
 	"friend_request_not_found": "درخواست دوستی پیدا نشد",
 	"friend_request_already_sent": "درخواست دوستی ارسال شده است",
 	"word_not_found": "کلمه پیدا نشد",
+	"word_not_in_dictionary": "کلمه در فرهنگ لغت یافت نشد",
 	"swapplus_not_available": "کلمه پیدا نشد",
 	"item_not_found": "آیتم مورد نظر پیدا نشد",
 	"not_enough_balance": "اعتبار شما کافی نیست",
 	"YOU_CANNOT_INVITE_YOURSELF": "نمیتوانید خودتان را دعوت کنید",
-	"USER_ALREADY_BEFRIENDED": "این کاربر در حال حاضر دوست شماست"
+	"USER_ALREADY_BEFRIENDED": "این کاربر در حال حاضر دوست شماست",
+	"GAME_NOT_FOUND": "بازی پیدا نشد",
+	"GAME_INACTIVE": "بازی غیر فعال است",
+	"GAME_FINISHED": "بازی تمام شده است"
 }

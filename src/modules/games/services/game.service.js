@@ -88,8 +88,7 @@ export default {
     return this.controlRacks(userId, await this.preTransformGame(game))
   },
 
-  async validateLetters({ userId, gameId, letters }) {
-    const game = await GameRepo.findOne({ _id: gameId })
+  async validateLetters({ userId, game, letters }) {
     let wordBonus = null
     // check if the letters are in the player's rack
     const player = game.players.find((player) => player.userId.toString() === userId)
@@ -568,9 +567,7 @@ export default {
     return game
   },
 
-  async surrender({ userId, gameId }) {
-    let game = await GameRepo.findById(gameId)
-
+  async surrender({ userId, game }) {
     const opponent = game.players.find(p => p.userId.toString() !== userId)
     game.winner = opponent.userId
     game.status = statuses.GAME.FINISHED
@@ -580,7 +577,7 @@ export default {
 
     await user.addTransaction({
       amount: game.coinPrize,
-      recordId: gameId,
+      recordId: game.id,
       type: coinTransactionTypes.GAME,
     })
 
@@ -593,12 +590,28 @@ export default {
       destination: notificationDestinations.GAME,
     })
 
+    return this.finish({ winnerId: opponent.userId, gameId: game.id })
+  },
+
+  async finish({ winnerId, gameId }) {
+    let game = await GameRepo.findById(gameId)
+
+    const winner = game.players.find(p => p.userId.toString() === winnerId.toString())
+    game.winner = winner.userId
+    game.status = statuses.GAME.FINISHED
+
+    let user = await UserRepo.findById(winnerId)
+
+    await user.addTransaction({
+      amount: game.coinPrize,
+      recordId: gameId,
+      type: coinTransactionTypes.GAME,
+    })
+
     return game.save()
   },
 
-  async swapLetters({ gameId, userId, letters, isPlus }) {
-    const game = await GameRepo.findOne({ _id: gameId })
-
+  async swapLetters({ game, userId, letters, isPlus }) {
     // is it his turn?
     if (!game.players.find(p => p.userId.toString() === userId).shouldPlayNext) {
       throw new Error(messages.NOT_YOUR_TURN)

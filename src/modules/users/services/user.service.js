@@ -224,11 +224,15 @@ export default {
       amount: config.prices.referrerGift,
       recordId: referredUserId,
     })
+    referrer.friends.push(user._id)
+    await referrer.save()
     await user.addTransaction({
       type: coinTransactionTypes.REFERRAL,
       amount: config.prices.referredUserGift,
       recordId: referrer._id,
     })
+    user.friends.push(referrer._id)
+    await user.save()
 
     return true
   },

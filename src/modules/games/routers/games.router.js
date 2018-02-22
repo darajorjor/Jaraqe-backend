@@ -1,11 +1,14 @@
 import { Router } from 'express'
-import validate from 'express-validation'
-import rules from '../validators'
+import GameRepo from 'repositories/game.repository'
+// import validate from 'express-validation'
+// import rules from '../validators'
 import userMiddleware from 'src/middlewares/userSession.middleware'
-import deviceMiddleware from 'src/middlewares/deviceToken.middleware'
+// import deviceMiddleware from 'src/middlewares/deviceToken.middleware'
 import { gamesController } from '../controllers'
 
 const router = Router()
+
+router.param('gameId', gamesController.gameIdParam)
 
 router.post('/smart-match',
   // deviceMiddleware,
@@ -42,7 +45,7 @@ router.post('/:gameId/surrender',
   gamesController.surrenderGame,
 )
 
-router.get('/:gameId',
+router.get('/:gameIdAlt',
   // deviceMiddleware,
   userMiddleware,
   // validate(rules.registerDevice),

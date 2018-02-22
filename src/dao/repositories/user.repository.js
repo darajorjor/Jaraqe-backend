@@ -19,7 +19,8 @@ export default {
     const users = await User.aggregate([
       {
         $match: {
-          _id: { $ne: mongoose.Types.ObjectId(id) }
+          _id: { $ne: mongoose.Types.ObjectId(id) },
+          status: status.USER.ACTIVE,
         }
       },
       {

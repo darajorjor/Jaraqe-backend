@@ -19,5 +19,6 @@ export default {
   GAME: {
     ACTIVE: 'ACTIVE',
     FINISHED: 'FINISHED',
+    INACTIVE: 'INACTIVE',
   },
 }
