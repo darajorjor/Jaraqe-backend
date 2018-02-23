@@ -1,11 +1,41 @@
 import mongoose from 'connections/mongo'
 import boardEnums from 'src/constants/enums/board.enum'
 import statuses from 'src/constants/enums/status.enum'
+import attachmentTypes from 'src/constants/enums/attachmentTypes.enum'
 import uuid from 'uuid/v4'
 import Board from './board.model'
 import shuffleArray from '../../utils/helpers/shuffleArray'
+import UserRepo from 'repositories/user.repository'
 import config from 'src/config/app.config'
 import wordService from 'src/modules/words/services/word.service'
+
+const Message = new mongoose.Schema({
+  sender: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'User',
+    allowNull: false,
+  },
+  message: {
+    type: String,
+    allowNull: false,
+  },
+  attachment: {
+    type: {
+      type: String,
+      enum: Object.values(attachmentTypes),
+    },
+    url: String,
+  },
+  status: {
+    type: String,
+    enum: Object.values(statuses.CHAT),
+    default: statuses.CHAT.PENDING,
+  },
+  time: {
+    type: Date,
+    default: new Date
+  }
+})
 
 const GameSchema = new mongoose.Schema({
   coinPrize: {
@@ -118,6 +148,7 @@ const GameSchema = new mongoose.Schema({
       default: false,
     }
   }],
+  messages: [Message],
   status: {
     type: String,
     enum: Object.values(statuses.GAME),
@@ -199,7 +230,7 @@ GameSchema.methods = {
 
     // change turn
     this.players = this.players.map((player) => {
-      player.shouldPlayNext = player.userId.toString() === shouldPlayNext.toString();
+      player.shouldPlayNext = player.userId.toString() === shouldPlayNext.toString()
 
       if (player.userId.toString() === userId) {
         player.shouldPlayNext = false
@@ -215,8 +246,34 @@ GameSchema.methods = {
 
     return this.save()
   },
+  async chat({ userId, text }) {
+    this.messages.push({
+      sender: userId,
+      message: text,
+    })
+
+    const savedGame = await this.save()
+
+    const lastMessage = savedGame.messages[savedGame.messages.length - 1].toObject()
+    lastMessage.sender = await UserRepo.findById(lastMessage.sender)
+
+    return lastMessage
+  },
+  async seeMessages(userId) {
+    this.messages = this.messages.map(i => {
+      if (i.sender.toString() !== userId) {
+        if (i.status === statuses.CHAT.PENDING) {
+          i.status = statuses.CHAT.SEEN
+        }
+      }
+
+      return i
+    })
+
+    return this.save()
+  },
 }
 
-const Game = mongoose.model('Game', GameSchema);
+const Game = mongoose.model('Game', GameSchema)
 
-export default Game;
+export default Game

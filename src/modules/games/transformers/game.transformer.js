@@ -12,6 +12,15 @@ const rules = {
   history: 'history',
   letters: 'letters',
   createdAt: 'createdAt',
+  messages: (obj) => obj.messages.splice(0, 25),
+}
+const singleGameRules = {
+  ...rules,
+  messages: (obj) => obj.messages.splice(0, 25),
+}
+
+export function singleGameTransformer(object) {
+  return transform(object, singleGameRules)
 }
 
 export default (object) => {

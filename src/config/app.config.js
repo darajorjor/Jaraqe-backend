@@ -57,4 +57,8 @@ export default {
     referrerGift: 40,
     referredUserGift: 40,
   },
+  socket: {
+    dummyConnectionTimeout: 30 * 1000,
+    socketExpiration: 60 * 60 * 1000,
+  },
 }

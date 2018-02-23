@@ -45,6 +45,13 @@ router.post('/:gameId/surrender',
   gamesController.surrenderGame,
 )
 
+router.get('/:gameIdAlt/chats',
+  // deviceMiddleware,
+  userMiddleware,
+  // validate(rules.registerDevice),
+  gamesController.listGameChats,
+)
+
 router.get('/:gameIdAlt',
   // deviceMiddleware,
   userMiddleware,

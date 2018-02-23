@@ -21,4 +21,10 @@ export default {
     FINISHED: 'FINISHED',
     INACTIVE: 'INACTIVE',
   },
+  CHAT: {
+    SEEN: 'SEEN',
+    DELETED: 'DELETED',
+    RECEIVED: 'RECEIVED',
+    PENDING: 'PENDING',
+  },
 }

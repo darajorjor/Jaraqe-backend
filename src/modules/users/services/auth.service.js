@@ -11,6 +11,7 @@ export default {
       response_type: 'code',
     })}`)
   },
+
   loginGoogle(fullUrl) {
     const OAuth2 = google.auth.OAuth2
 

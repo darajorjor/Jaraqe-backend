@@ -57,6 +57,16 @@ export default {
       .exec()
   },
 
+  async listChats(gameId) {
+    const game = await Game.findById(gameId)
+      .populate('messages.sender')
+      .exec()
+
+    if (!game) return null
+
+    return game.messages.map(i => i.toObject()).sort((a, b) => new Date(b.time) - new Date(a.time))
+  },
+
   async play() {
 
   }

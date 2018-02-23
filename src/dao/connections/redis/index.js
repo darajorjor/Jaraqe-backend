@@ -7,4 +7,10 @@ const redis = new Redis({
   password: appConfig.redis.password,
 });
 
+export const sub = new Redis({
+  host: appConfig.redis.host,
+  port: appConfig.redis.port,
+  password: appConfig.redis.password,
+})
+
 export default redis;

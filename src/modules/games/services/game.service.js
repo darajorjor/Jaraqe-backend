@@ -88,6 +88,10 @@ export default {
     return this.controlRacks(userId, await this.preTransformGame(game))
   },
 
+  async getGameChats(gameId) {
+    return GameRepo.listChats(gameId)
+  },
+
   async validateLetters({ userId, game, letters }) {
     let wordBonus = null
     // check if the letters are in the player's rack

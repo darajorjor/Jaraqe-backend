@@ -1,6 +1,7 @@
 // import DeviceRepository from 'repositories/device.repository'
 import GameRepo from 'repositories/game.repository'
-import transformGame from '../transformers/game.transformer'
+import transformGame, { singleGameTransformer } from '../transformers/game.transformer'
+import transformUser from 'src/modules/users/transformers/user.transformer'
 import gameService from '../services/game.service'
 import messages from 'src/constants/defaults/messages.default'
 import statuses from 'src/constants/enums/status.enum'
@@ -42,7 +43,7 @@ export default {
         player2: matchedUser._id
       })
 
-      return res.build.success({ game: transformGame(game) }, res.messages.GAME_CREATED_SUCCESSFULLY)
+      return res.build.success({ game: singleGameTransformer(game) }, res.messages.GAME_CREATED_SUCCESSFULLY)
     } catch (error) {
       switch (error.message) {
         default:
@@ -62,7 +63,7 @@ export default {
         player2: userId
       })
 
-      return res.build.success({ game: transformGame(game) }, res.messages.GAME_CREATED_SUCCESSFULLY)
+      return res.build.success({ game: singleGameTransformer(game) }, res.messages.GAME_CREATED_SUCCESSFULLY)
     } catch (error) {
       switch (error.message) {
         default:
@@ -93,7 +94,22 @@ export default {
 
       const game = await gameService.getGame({ userId: id, gameId: gameIdAlt })
 
-      return res.build.success(transformGame(game))
+      return res.build.success(singleGameTransformer(game))
+    } catch (error) {
+      switch (error.message) {
+        default:
+          return next(error);
+      }
+    }
+  },
+
+  async listGameChats(req, res, next) {
+    try {
+      const { gameIdAlt } = req.params
+
+      const messages = await gameService.getGameChats(gameIdAlt)
+
+      return res.build.success({ messages: messages.map(({ sender, ...rest }) => ({ ...rest, sender: transformUser(sender) })) })
     } catch (error) {
       switch (error.message) {
         default:
@@ -131,7 +147,7 @@ export default {
         return w
       }), letters })
 
-      return res.build.success({ game: transformGame(newGame) })
+      return res.build.success({ game: singleGameTransformer(newGame) })
     } catch (error) {
       switch (error.message) {
         case messages.LETTER_NOT_VALID:
@@ -159,7 +175,7 @@ export default {
 
       const surrenderedGame = await gameService.surrender({ userId: id, game })
 
-      res.build.success({ game: transformGame(surrenderedGame )})
+      res.build.success({ game: singleGameTransformer(surrenderedGame )})
     } catch (error) {
       switch (error.message) {
         default:

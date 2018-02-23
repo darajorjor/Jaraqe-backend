@@ -19,5 +19,6 @@
 	"USER_ALREADY_BEFRIENDED": "این کاربر در حال حاضر دوست شماست",
 	"GAME_NOT_FOUND": "بازی پیدا نشد",
 	"GAME_INACTIVE": "بازی غیر فعال است",
-	"GAME_FINISHED": "بازی تمام شده است"
+	"GAME_FINISHED": "بازی تمام شده است",
+	"TIMER_RAN_OUT": "وقتت تمام شد"
 }
