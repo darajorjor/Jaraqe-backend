@@ -14,12 +14,13 @@ export default {
 
     games.map(async (game) => {
       if (game.history.length > 0) {
-        const lastTurnTime = game.history[game.history.length - 1].time
-        const hoursDiff = Math.abs(moment().diff(moment(lastTurnTime), 'hours'))
+        const lastTurn = game.history[game.history.length - 1]
+        const hoursDiff = Math.abs(moment().diff(moment(lastTurn.time), 'hours'))
         const nextPlayerUserId = game.players.find(p => !!p.shouldPlayNext).userId.toString()
         const someOtherPlayerId = game.players.find(p => !p.shouldPlayNext).userId.toString()
 
         const otherPlayer = await UserRepo.findById(someOtherPlayerId)
+        const nextPlayer = await UserRepo.findById(nextPlayerUserId)
 
         if (hoursDiff >= 24) {
           return gameService.finish({ winnerId: someOtherPlayerId, gameId: game._id })
@@ -32,6 +33,11 @@ export default {
             priority: notificationPriorities.HIGH,
             destination: notificationDestinations.GAME,
           })
+          await game.logAlert({
+            user: nextPlayerUserId,
+            atHour: 23,
+            turn: lastTurn._id,
+          })
         } else if (hoursDiff >= 12) {
           await sendPush({
             userId: nextPlayerUserId,
@@ -41,8 +47,13 @@ export default {
             priority: notificationPriorities.MEDIUM,
             destination: notificationDestinations.GAME,
           })
+          await game.logAlert({
+            user: nextPlayerUserId,
+            atHour: 12,
+            turn: lastTurn._id,
+          })
         }
       }
     })
   },
-};
+}

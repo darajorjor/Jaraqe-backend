@@ -11,7 +11,6 @@ const onesignalClient = onesignal.createClient();
 onesignalClient.notifications.create = Promise.promisify(onesignalClient.notifications.create);
 
 kueProcessor.process(kueTypes.PUSH_NOTIFICATION, async (job, done) => {
-  debugger
   const {
     userId,
     title,

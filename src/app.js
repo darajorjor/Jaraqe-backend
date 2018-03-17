@@ -8,8 +8,6 @@ import path from 'path'
 import chalk from 'chalk'
 import helmet from 'helmet'
 import WebSocket from 'ws'
-import { sub } from 'connections/redis'
-import GameRepo from 'repositories/game.repository'
 
 import { connectionHandler } from 'src/modules/socket'
 import ResponseBuilder from 'src/utils/helpers/responseBuilder'
@@ -19,7 +17,6 @@ import config from 'src/config/app.config'
 import errorHandler from 'src/utils/helpers/errorHandler'
 import modulesList from 'src/modules'
 import initWorkers from './workers'
-import events from 'src/modules/socket/events'
 
 global.Promise = Promise
 
@@ -66,28 +63,10 @@ modulesList.forEach((moduleName) => {
 
 const wss = new WebSocket.Server({ server })
 
-wss.on('connection', connectionHandler)
+wss.on('connection', connectionHandler(wss))
 wss.on('listening', () => console.log(chalk.green('WebSocket listening')))
 wss.on('error', (e) => {
   console.error('Websocket error ===>', e)
-})
-
-sub.psubscribe('chats:*')
-sub.on('pmessage', async function (pattern, channel, message) {
-  const gameId = channel.split(':')[1]
-  const game = await GameRepo.findById(gameId)
-  if (!game) return null
-
-  const clients = Array.from(wss.clients)
-
-  clients.map((client) => {
-    if (game.players.map(i => i.userId.toString()).includes(client.userId)) {
-      client.send(JSON.stringify({
-        type: events.NEW_MESSAGE,
-        message: JSON.parse(message)
-      }))
-    }
-  })
 })
 
 app.use(errorHandler)

@@ -22,7 +22,7 @@ export default {
       session
     }))
 
-    return user
+    return (user.id || user._id)
   },
 
   async chat({ userId, gameId, text }) {

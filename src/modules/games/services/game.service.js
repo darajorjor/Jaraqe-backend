@@ -7,7 +7,7 @@ import boardDefaults from 'src/constants/defaults/board.default'
 import messages from 'src/constants/defaults/messages.default'
 import uuid from 'uuid/v4'
 import _ from 'lodash'
-import { checkSiblingTiles } from 'src/utils/helpers/game.hepler'
+import { checkSiblingTiles } from 'src/utils/helpers/game.helper'
 import sendPush from 'src/utils/push'
 import notificationTypes from 'src/constants/enums/notificationTypes.enum'
 import notificationPriorities from 'src/constants/enums/notificationPriorities.enum'
@@ -492,8 +492,6 @@ export default {
       })
     }
 
-    debugger
-
     return {
       letters,
       words,
@@ -533,7 +531,8 @@ export default {
 
     const nextPlayer = playedGame.players.find(pl => pl.shouldPlayNext)
     const otherPlayer = playedGame.players.find(pl => !pl.shouldPlayNext)
-    await sendPush({
+
+    sendPush({
       userId: nextPlayer.userId.id,
       title: 'نوبت توئه!',
       message: `${otherPlayer.userId.fullName || otherPlayer.userId.userName} منتظرته، نوبتتو بازی کن`,
@@ -621,6 +620,7 @@ export default {
       throw new Error(messages.NOT_YOUR_TURN)
     }
 
+    // TODO send on socket
     // can he use isPlus?
     if (isPlus) {
       const user = await UserRepo.findById(userId)
@@ -644,7 +644,7 @@ export default {
 
       if (!isPlus) {
         // change turn
-        player.shouldPlayNext = player.userId.toString() === shouldPlayNext.toString();
+        player.shouldPlayNext = player.userId.toString() === shouldPlayNext.toString()
       }
 
       return player

@@ -148,6 +148,15 @@ const GameSchema = new mongoose.Schema({
       default: false,
     }
   }],
+  alerts: [{
+    user: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'User',
+      allowNull: false,
+    },
+    atHour: Number,
+    turn: mongoose.Schema.ObjectId,
+  }],
   messages: [Message],
   status: {
     type: String,
@@ -271,6 +280,19 @@ GameSchema.methods = {
     })
 
     return this.save()
+  },
+  async logAlert({ user, atHour, turn }) {
+    if (!this.alerts.find(a => (a.atHour === atHour && a.turn.toString() === turn.toString()))) {
+      this.alerts.push({
+        user,
+        atHour,
+        turn,
+      })
+
+      return this.save()
+    }
+
+    return true
   },
 }
 

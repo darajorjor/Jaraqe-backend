@@ -7,4 +7,5 @@ export default {
   SEE_MESSAGES: 'see_messages',
   ERROR: 'error',
   NEW_MESSAGE: 'new_message',
+  PLAY_GAME: 'play_game',
 }

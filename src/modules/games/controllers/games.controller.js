@@ -5,13 +5,14 @@ import transformUser from 'src/modules/users/transformers/user.transformer'
 import gameService from '../services/game.service'
 import messages from 'src/constants/defaults/messages.default'
 import statuses from 'src/constants/enums/status.enum'
+import redis from 'connections/redis'
 
 export default {
   async gameIdParam(req, res, next, id) {
     // do validation on name here
     // blah blah validation
     // log something so we know its working
-    console.log('doing name validations on ' + id);
+    console.log('doing name validations on ' + id)
     let game = await GameRepo.findById(id)
     if (game.status === statuses.GAME.INACTIVE) {
       return res.build.forbidden(messages.GAME_INACTIVE)
@@ -22,9 +23,9 @@ export default {
     }
 
     // once validation is done save the new item in the req
-    req.game = game;
+    req.game = game
     // go to the next thing
-    next();
+    next()
   },
 
   async smartMatch(req, res, next) {
@@ -47,7 +48,7 @@ export default {
     } catch (error) {
       switch (error.message) {
         default:
-          return next(error);
+          return next(error)
       }
     }
   },
@@ -67,7 +68,7 @@ export default {
     } catch (error) {
       switch (error.message) {
         default:
-          return next(error);
+          return next(error)
       }
     }
   },
@@ -82,7 +83,7 @@ export default {
     } catch (error) {
       switch (error.message) {
         default:
-          return next(error);
+          return next(error)
       }
     }
   },
@@ -98,7 +99,7 @@ export default {
     } catch (error) {
       switch (error.message) {
         default:
-          return next(error);
+          return next(error)
       }
     }
   },
@@ -109,11 +110,16 @@ export default {
 
       const messages = await gameService.getGameChats(gameIdAlt)
 
-      return res.build.success({ messages: messages.map(({ sender, ...rest }) => ({ ...rest, sender: transformUser(sender) })) })
+      return res.build.success({
+        messages: messages.map(({ sender, ...rest }) => ({
+          ...rest,
+          sender: transformUser(sender)
+        }))
+      })
     } catch (error) {
       switch (error.message) {
         default:
-          return next(error);
+          return next(error)
       }
     }
   },
@@ -129,8 +135,11 @@ export default {
 
       //validate letters and letters on board
       //check bonuses
-      debugger
-      const { letters, game: playedGame, words } = await gameService.validateLetters({ userId: id, game, letters: rawLetters })
+      const { letters, game: playedGame, words } = await gameService.validateLetters({
+        userId: id,
+        game,
+        letters: rawLetters
+      })
 
       if (words.length === 0) {
         return res.build.notFound(messages.WORD_NOT_IN_DICTIONARY)
@@ -141,13 +150,19 @@ export default {
       }))
 
       //use it
-      const newGame = await gameService.play({ userId: id, game: playedGame, words: words.map(w => {
-        w.id = w.word.id
-        w.word = w.word.word
-        return w
-      }), letters })
+      const newGame = await gameService.play({
+        userId: id, game: playedGame, words: words.map(w => {
+          w.id = w.word.id
+          w.word = w.word.word
+          return w
+        }), letters
+      })
 
-      return res.build.success({ game: singleGameTransformer(newGame) })
+      const transformedGame = singleGameTransformer(newGame)
+
+      redis.publish(`games:${transformedGame.id}`, JSON.stringify(transformedGame))
+
+      return res.build.success({ game: transformedGame })
     } catch (error) {
       switch (error.message) {
         case messages.LETTER_NOT_VALID:
@@ -160,7 +175,7 @@ export default {
           res.build.notFound(messages.WORD_NOT_IN_DICTIONARY)
           break
         default:
-          return next(error);
+          return next(error)
       }
     }
   },
@@ -175,11 +190,11 @@ export default {
 
       const surrenderedGame = await gameService.surrender({ userId: id, game })
 
-      res.build.success({ game: singleGameTransformer(surrenderedGame )})
+      res.build.success({ game: singleGameTransformer(surrenderedGame) })
     } catch (error) {
       switch (error.message) {
         default:
-          return next(error);
+          return next(error)
       }
     }
   },
@@ -203,7 +218,7 @@ export default {
         case messages.SWAPPLUS_NOT_AVAILABLE:
           return res.build.forbidden(messages.SWAPPLUS_NOT_AVAILABLE)
         default:
-          return next(error);
+          return next(error)
       }
     }
   },
